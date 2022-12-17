@@ -32,10 +32,12 @@
       <Unit>
         <Filename Value="..\src\otqueue.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="otQueue"/>
       </Unit>
       <Unit>
         <Filename Value="..\src\otstack.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="otStack"/>
       </Unit>
       <Unit>
         <Filename Value="..\src\otYaml.pas"/>
@@ -44,6 +46,7 @@
       <Unit>
         <Filename Value="..\src\otyamlchars.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="otYamlChars"/>
       </Unit>
       <Unit>
         <Filename Value="..\src\otyamlevent.pas"/>

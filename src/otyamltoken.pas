@@ -18,8 +18,8 @@ type
   public
     constructor Create(AStartMark, AEndMark: TYamlMark);
 
-    property start_mark: TYamlMark Read FStartMark;
-    property end_mark: TYamlMark Read FEndMark;
+    property startMark: TYamlMark Read FStartMark;
+    property endMark: TYamlMark Read FEndMark;
   end;
 
   TStreamStartToken = class(TYamlToken)
@@ -127,7 +127,7 @@ type
     constructor Create(const AValue: String; AStyle: TYamlScalarStyle;
       AStartMark, AEndMark: TYamlMark);
     property Value: String Read FValue;
-    property scalar_style: TYamlScalarStyle Read FScalarStyle;
+    property scalarStyle: TYamlScalarStyle Read FScalarStyle;
   end;
 
   { TFlowSequenceStartToken }
