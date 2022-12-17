@@ -24,7 +24,7 @@ type
     FMark: TYamlMark;
 
   public
-    constructor Create(AProblem: String; mark: TYamlMark);
+    constructor Create(AProblem: String; AMark: TYamlMark);
   end;
 
   EYamlParserErrorContext = class(Exception)
@@ -34,8 +34,8 @@ type
     FProblemMark: TYamlMark;
 
   public
-    constructor Create(AContext: String; context_mark: TYamlMark;
-      AProblem: String; problem_mark: TYamlMark);
+    constructor Create(AContext: String; AContextMark: TYamlMark;
+      AProblem: String; AProblemMark: TYamlMark);
 
     property problemMark: TYamlMark Read FProblemMark;
   end;
@@ -71,39 +71,39 @@ type
     (** The list of TAG directives. *)
     tagDirectives: TYamlTagDirectives;
 
-    procedure set_parser_error(AProblem: String; mark: TYamlMark);
-    procedure set_parser_error_context(AContext: String; context_mark: TYamlMark;
-      AProblem: String; problem_mark: TYamlMark);
+    procedure set_parser_error(AProblem: String; AMark: TYamlMark);
+    procedure set_parser_error_context(AContext: String; AContextMark: TYamlMark;
+      AProblem: String; AProblemMark: TYamlMark);
 
     function state_machine: TYamlEvent;
     function parse_stream_start: TYamlEvent;
-    function parse_document_start(implicit: Boolean): TYamlEvent;
+    function parse_document_start(AImplicit: Boolean): TYamlEvent;
     function parse_document_end: TYamlEvent;
     function parse_document_content: TYamlEvent;
-    function parse_node(block: Boolean; indentless_sequence: Boolean): TYamlEvent;
-    function parse_block_sequence_entry(First: Boolean): TYamlEvent;
+    function parse_node(ABlock: Boolean; AIndentlessSequence: Boolean): TYamlEvent;
+    function parse_block_sequence_entry(AFirst: Boolean): TYamlEvent;
     function parse_indentless_sequence_entry: TYamlEvent;
-    function parse_block_mapping_key(First: Boolean): TYamlEvent;
+    function parse_block_mapping_key(AFirst: Boolean): TYamlEvent;
     function parse_block_mapping_value: TYamlEvent;
-    function parse_flow_sequence_entry(First: Boolean): TYamlEvent;
+    function parse_flow_sequence_entry(AFirst: Boolean): TYamlEvent;
     function parse_flow_sequence_entry_mapping_key: TYamlEvent;
     function parse_flow_sequence_entry_mapping_value: TYamlEvent;
     function parse_flow_sequence_entry_mapping_end: TYamlEvent;
-    function parse_flow_mapping_key(First: Boolean): TYamlEvent;
-    function parse_flow_mapping_value(empty: Boolean): TYamlEvent;
+    function parse_flow_mapping_key(AFirst: Boolean): TYamlEvent;
+    function parse_flow_mapping_value(AEmpty: Boolean): TYamlEvent;
 
-    procedure process_directives(var version_directive: TYamlVersionDirective);
-    function process_empty_scalar(mark: TYamlMark): TYamlEvent;
+    procedure process_directives(var AVersionDirective: TYamlVersionDirective);
+    function process_empty_scalar(AMark: TYamlMark): TYamlEvent;
 
-    procedure append_tag_directive(const Value: TYamlTagDirective;
-      allow_duplicates: Boolean; mark: TYamlMark);
+    procedure append_tag_directive(const AValue: TYamlTagDirective;
+      AAllowDuplicates: Boolean; AMark: TYamlMark);
 
   public
     constructor Create;
     destructor Destroy; override;
 
     procedure SetInput(AStream: TStream);
-    procedure SetEncoding(encoding: TYamlEncoding);
+    procedure SetEncoding(AEncoding: TYamlEncoding);
 
     function parse: TYamlEvent;
 
@@ -113,19 +113,19 @@ implementation
 
 { EYamlParserError }
 
-constructor EYamlParserError.Create(AProblem: String; mark: TYamlMark);
+constructor EYamlParserError.Create(AProblem: String; AMark: TYamlMark);
 begin
   inherited Create(AProblem);
-  FMark := mark;
+  FMark := AMark;
 end;
 
-constructor EYamlParserErrorContext.Create(AContext: String; context_mark: TYamlMark;
-  AProblem: String; problem_mark: TYamlMark);
+constructor EYamlParserErrorContext.Create(AContext: String; AContextMark: TYamlMark;
+  AProblem: String; AProblemMark: TYamlMark);
 begin
   inherited Create(AProblem);
   FContext := AContext;
-  FContextMark := context_mark;
-  FProblemMark := problem_mark;
+  FContextMark := AContextMark;
+  FProblemMark := AProblemMark;
 end;
 
 {*
@@ -171,15 +171,15 @@ end;
 
 { TYamlParser }
 
-procedure TYamlParser.set_parser_error(AProblem: String; mark: TYamlMark);
+procedure TYamlParser.set_parser_error(AProblem: String; AMark: TYamlMark);
 begin
-  raise EYamlParserError.Create(AProblem, mark);
+  raise EYamlParserError.Create(AProblem, AMark);
 end;
 
-procedure TYamlParser.set_parser_error_context(AContext: String; context_mark: TYamlMark;
-  AProblem: String; problem_mark: TYamlMark);
+procedure TYamlParser.set_parser_error_context(AContext: String; AContextMark: TYamlMark;
+  AProblem: String; AProblemMark: TYamlMark);
 begin
-  raise EYamlParserErrorContext.Create(AContext, context_mark, AProblem, problem_mark);
+  raise EYamlParserErrorContext.Create(AContext, AContextMark, AProblem, AProblemMark);
 end;
 
 function TYamlParser.state_machine: TYamlEvent;
@@ -279,7 +279,7 @@ begin
   FScanner.SkipToken;
 end;
 
-function TYamlParser.parse_document_start(implicit: Boolean): TYamlEvent;
+function TYamlParser.parse_document_start(AImplicit: Boolean): TYamlEvent;
 var
   token: TYamlToken;
   versionDirective: TYamlVersionDirective;
@@ -295,7 +295,7 @@ begin
 
   // Parse extra document end indicators.
 
-  if not implicit then begin
+  if not AImplicit then begin
     while (token is TDocumentEndToken) do begin
       FScanner.SkipToken;
       token := FScanner.Peek;
@@ -304,9 +304,9 @@ begin
     end;
   end;
 
-  // Parse an implicit document.
+  // Parse an AImplicit document.
 
-  if implicit and (not (token is TVersionDirectiveToken)) and
+  if AImplicit and (not (token is TVersionDirectiveToken)) and
     (not (token is TTagDirectiveToken)) and
     (not (token is TDocumentStartToken)) and
     (not (token is TStreamEndToken)) then begin
@@ -401,7 +401,7 @@ begin
   end;
 end;
 
-function TYamlParser.parse_node(block: Boolean; indentless_sequence: Boolean): TYamlEvent;
+function TYamlParser.parse_node(ABlock: Boolean; AIndentlessSequence: Boolean): TYamlEvent;
 var
   token: TYamlToken;
   anchor: String;
@@ -495,7 +495,7 @@ begin
     end;
 
     implicit := (not has_tag) or (tag = '');
-    if indentless_sequence and (token is TBlockEntryToken) then begin
+    if AIndentlessSequence and (token is TBlockEntryToken) then begin
       end_mark := token.end_mark;
       state := YAML_PARSE_INDENTLESS_SEQUENCE_ENTRY_STATE;
       Result := TSequenceStartEvent.Create(anchor, tag, implicit,
@@ -540,7 +540,7 @@ begin
         Exit;
       end
       else
-      if (block and (token is TBlockSequenceStartToken)) then begin
+      if (ABlock and (token is TBlockSequenceStartToken)) then begin
         end_mark := token.end_mark;
         state := YAML_PARSE_BLOCK_SEQUENCE_FIRST_ENTRY_STATE;
         Result := TSequenceStartEvent.Create(anchor, tag, implicit,
@@ -548,7 +548,7 @@ begin
         Exit;
       end
       else
-      if (block and (token is TBlockMappingStartToken)) then begin
+      if (ABlock and (token is TBlockMappingStartToken)) then begin
         end_mark := token.end_mark;
         state := YAML_PARSE_BLOCK_MAPPING_FIRST_KEY_STATE;
         Result := TMappingStartEvent.Create(anchor, tag, implicit,
@@ -564,7 +564,7 @@ begin
         Exit;
       end
       else begin
-        if block then
+        if ABlock then
           set_parser_error_context(
             'while parsing a block node', start_mark,
             'did not find expected node content', token.start_mark)
@@ -577,12 +577,12 @@ begin
   end;
 end;
 
-function TYamlParser.parse_block_sequence_entry(First: Boolean): TYamlEvent;
+function TYamlParser.parse_block_sequence_entry(AFirst: Boolean): TYamlEvent;
 var
   token: TYamlToken;
   mark: TYamlMark;
 begin
-  if (First) then begin
+  if (AFirst) then begin
     token := FScanner.Peek;
     marks.Push(token.start_mark);
     FScanner.SkipToken;
@@ -659,12 +659,12 @@ begin
   end;
 end;
 
-function TYamlParser.parse_block_mapping_key(First: Boolean): TYamlEvent;
+function TYamlParser.parse_block_mapping_key(AFirst: Boolean): TYamlEvent;
 var
   token: TYamlToken;
   mark: TYamlMark;
 begin
-  if (First) then begin
+  if (AFirst) then begin
     token := FScanner.Peek;
     marks.Push(token.start_mark);
     FScanner.SkipToken;
@@ -743,11 +743,11 @@ begin
 
 end;
 
-function TYamlParser.parse_flow_sequence_entry(First: Boolean): TYamlEvent;
+function TYamlParser.parse_flow_sequence_entry(AFirst: Boolean): TYamlEvent;
 var
   token: TYamlToken;
 begin
-  if (First) then begin
+  if (AFirst) then begin
     token := FScanner.Peek;
     marks.Push(token.start_mark);
     FScanner.SkipToken;
@@ -758,7 +758,7 @@ begin
     Exit(nil);
 
   if not (token is TFlowSequenceEndToken) then begin
-    if (not First) then begin
+    if (not AFirst) then begin
       if (token is TFlowEntryToken) then begin
         FScanner.SkipToken;
         token := FScanner.Peek;
@@ -853,11 +853,11 @@ begin
   Exit(TMappingEndEvent.Create(token.start_mark, token.start_mark));
 end;
 
-function TYamlParser.parse_flow_mapping_key(First: Boolean): TYamlEvent;
+function TYamlParser.parse_flow_mapping_key(AFirst: Boolean): TYamlEvent;
 var
   token: TYamlToken;
 begin
-  if (First) then begin
+  if (AFirst) then begin
     token := FScanner.Peek;
     marks.Push(token.start_mark);
     FScanner.SkipToken;
@@ -868,7 +868,7 @@ begin
     Exit(nil);
 
   if not (token is TFlowMappingEndToken) then begin
-    if (not First) then begin
+    if (not AFirst) then begin
       if (token is TFlowEntryToken) then begin
         FScanner.SkipToken;
         token := FScanner.Peek;
@@ -911,7 +911,7 @@ begin
   FScanner.SkipToken;
 end;
 
-function TYamlParser.parse_flow_mapping_value(empty: Boolean): TYamlEvent;
+function TYamlParser.parse_flow_mapping_value(AEmpty: Boolean): TYamlEvent;
 var
   token: TYamlToken;
 begin
@@ -919,7 +919,7 @@ begin
   if not Assigned(token) then
     Exit(nil);
 
-  if (empty) then begin
+  if (AEmpty) then begin
     state := YAML_PARSE_FLOW_MAPPING_KEY_STATE;
     Exit(process_empty_scalar(token.start_mark));
   end;
@@ -940,7 +940,7 @@ begin
   Exit(process_empty_scalar(token.start_mark));
 end;
 
-procedure TYamlParser.process_directives(var version_directive: TYamlVersionDirective);
+procedure TYamlParser.process_directives(var AVersionDirective: TYamlVersionDirective);
 var
   token: TYamlToken;
   defaultTagDirectives: TYamlTagDirectives;
@@ -958,7 +958,7 @@ begin
   while (token is TVersionDirectiveToken) or
     (token is TTagDirectiveToken) do begin
     if (token is TVersionDirectiveToken) then begin
-      if (version_directive.Major <> 0) then begin
+      if (AVersionDirective.Major <> 0) then begin
         set_parser_error(
           'found duplicate %YAML directive', token.start_mark);
       end;
@@ -971,8 +971,8 @@ begin
         set_parser_error(
           'found incompatible YAML document', token.start_mark);
       end;
-      version_directive.Major := versionToken.major;
-      version_directive.Minor := versionToken.minor;
+      AVersionDirective.Major := versionToken.major;
+      AVersionDirective.Minor := versionToken.minor;
     end
     else
     if (token is TTagDirectiveToken) then begin
@@ -993,27 +993,27 @@ begin
   end;
 end;
 
-function TYamlParser.process_empty_scalar(mark: TYamlMark): TYamlEvent;
+function TYamlParser.process_empty_scalar(AMark: TYamlMark): TYamlEvent;
 begin
   Result := TScalarEvent.Create('', '', '',
-    True, False, yssPlainScalar, mark, mark);
+    True, False, yssPlainScalar, AMark, AMark);
 end;
 
-procedure TYamlParser.append_tag_directive(const Value: TYamlTagDirective;
-  allow_duplicates: Boolean; mark: TYamlMark);
+procedure TYamlParser.append_tag_directive(const AValue: TYamlTagDirective;
+  AAllowDuplicates: Boolean; AMark: TYamlMark);
 var
   i: Integer;
 begin
   for i := 0 to High(tagDirectives) do begin
-    if Value.Handle = tagDirectives[i].Handle then begin
-      if allow_duplicates then
+    if AValue.Handle = tagDirectives[i].Handle then begin
+      if AAllowDuplicates then
         Exit;
-      set_parser_error('duplicate %TAG directive', mark);
+      set_parser_error('duplicate %TAG directive', AMark);
     end;
   end;
 
   SetLength(tagDirectives, Length(tagDirectives) + 1);
-  tagDirectives[High(tagDirectives)] := Value;
+  tagDirectives[High(tagDirectives)] := AValue;
 end;
 
 
@@ -1044,9 +1044,9 @@ begin
   FScanner.SetInput(AStream);
 end;
 
-procedure TYamlParser.SetEncoding(encoding: TYamlEncoding);
+procedure TYamlParser.SetEncoding(AEncoding: TYamlEncoding);
 begin
-  FScanner.SetEncoding(encoding);
+  FScanner.SetEncoding(AEncoding);
 end;
 
 function TYamlParser.parse: TYamlEvent;

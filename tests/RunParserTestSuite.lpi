@@ -52,10 +52,12 @@
       <Unit>
         <Filename Value="..\src\otyamlparser.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="otYamlParser"/>
       </Unit>
       <Unit>
         <Filename Value="..\src\otyamlreader.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="otYamlReader"/>
       </Unit>
       <Unit>
         <Filename Value="..\src\otyamlscanner.pas"/>
@@ -65,6 +67,7 @@
       <Unit>
         <Filename Value="..\src\otyamltoken.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="otYamlToken"/>
       </Unit>
     </Units>
   </ProjectOptions>

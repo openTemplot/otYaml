@@ -24,7 +24,7 @@ type
     FContextMark: TYamlMark;
 
   public
-    constructor Create(AContext: String; context_mark: TYamlMark;
+    constructor Create(AContext: String; AContextMark: TYamlMark;
       AProblem: String);
   end;
 
@@ -135,11 +135,11 @@ uses
 { EYamlScannerError }
 
 constructor EYamlScannerError.Create(AContext: String;
-  context_mark: TYamlMark; AProblem: String);
+  AContextMark: TYamlMark; AProblem: String);
 begin
   inherited Create(AProblem);
   FContext := AContext;
-  FContextMark := context_mark;
+  FContextMark := AContextMark;
 end;
 
 

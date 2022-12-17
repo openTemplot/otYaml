@@ -16,7 +16,7 @@ type
     FEndMark: TYamlMark;
 
   public
-    constructor Create(startMark, endMark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
 
     property start_mark: TYamlMark Read FStartMark;
     property end_mark: TYamlMark Read FEndMark;
@@ -27,7 +27,7 @@ type
     FEncoding: TYamlEncoding;
 
   public
-    constructor Create(AEncoding: TYamlEncoding; startMark, endMark: TYamlMark);
+    constructor Create(AEncoding: TYamlEncoding; AStartMark, AEndMark: TYamlMark);
     property encoding: TYamlEncoding Read FEncoding;
   end;
 
@@ -35,21 +35,21 @@ type
 
   TStreamEndToken = class(TYamlToken)
   public
-    constructor Create(startMark, endMark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
   { TDocumentStartToken }
 
   TDocumentStartToken = class(TYamlToken)
   public
-    constructor Create(startMark, endMark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
   { TDocumentEndToken }
 
   TDocumentEndToken = class(TYamlToken)
   public
-    constructor Create(startMark, endMark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
   TVersionDirectiveToken = class(TYamlToken)
@@ -58,7 +58,7 @@ type
     FMinor: Integer;
 
   public
-    constructor Create(AMajor, AMinor: Integer; startMark, endMark: TYamlMark);
+    constructor Create(AMajor, AMinor: Integer; AStartMark, AEndMark: TYamlMark);
     property major: Integer Read FMajor;
     property minor: Integer Read FMinor;
 
@@ -70,7 +70,7 @@ type
     FPrefix: String;
 
   public
-    constructor Create( AHandle, APrefix: String; startMark, endMark: TYamlMark);
+    constructor Create(AHandle, APrefix: String; AStartMark, AEndMark: TYamlMark);
     property handle: String Read FHandle;
     property prefix: String Read FPrefix;
 
@@ -81,7 +81,7 @@ type
     FValue: String;
 
   public
-    constructor Create(AValue: String; startMark, endMark: TYamlMark);
+    constructor Create(AValue: String; AStartMark, AEndMark: TYamlMark);
     property Value: String Read FValue;
   end;
 
@@ -90,7 +90,7 @@ type
     FValue: String;
 
   public
-    constructor Create(AValue: String; startMark, endMark: TYamlMark);
+    constructor Create(AValue: String; AStartMark, AEndMark: TYamlMark);
     property Value: String Read FValue;
   end;
 
@@ -100,7 +100,7 @@ type
     FSuffix: String;
 
   public
-    constructor Create(AHandle: String; ASuffix: String; startMark, endMark: TYamlMark);
+    constructor Create(AHandle: String; ASuffix: String; AStartMark, AEndMark: TYamlMark);
     property handle: String Read FHandle;
     property suffix: String Read FSuffix;
   end;
@@ -109,12 +109,12 @@ type
 
   TBlockEntryToken = class(TYamlToken)
   public
-    constructor Create(startMark, endMark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
   TBlockEndToken = class(TYamlToken)
-    public
-      constructor Create(startMark, endMark: TYamlMark);
+  public
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
   TScalarToken = class(TYamlToken)
@@ -123,7 +123,7 @@ type
     FScalarStyle: TYamlScalarStyle;
 
   public
-    constructor Create(AValue: String; AStyle: TYamlScalarStyle; startMark, endMark: TYamlMark);
+    constructor Create(AValue: String; AStyle: TYamlScalarStyle; AStartMark, AEndMark: TYamlMark);
     property Value: String Read FValue;
     property scalar_style: TYamlScalarStyle Read FScalarStyle;
   end;
@@ -132,213 +132,215 @@ type
 
   TFlowSequenceStartToken = class(TYamlToken)
   public
-    constructor Create(startMark, endMark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
   { TFlowSequenceEndToken }
 
   TFlowSequenceEndToken = class(TYamlToken)
   public
-    constructor Create(startMark, endMark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
   { TFlowMappingStartToken }
 
   TFlowMappingStartToken = class(TYamlToken)
   public
-    constructor Create(startMark, endMark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
   { TFlowMappingEndToken }
 
   TFlowMappingEndToken = class(TYamlToken)
   public
-    constructor Create(startMark, endMark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
   { TFlowEntryToken }
 
   TFlowEntryToken = class(TYamlToken)
   public
-    constructor Create(startMark, endMark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
   { TBlockSequenceStartToken }
 
   TBlockSequenceStartToken = class(TYamlToken)
   public
-    constructor Create( startMark, endMark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
   { TBlockMappingStartToken }
 
   TBlockMappingStartToken = class(TYamlToken)
   public
-    constructor Create( startMark, endMark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
   { TKeyToken }
 
   TKeyToken = class(TYamlToken)
   public
-    constructor Create(startMark, endMark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
   { TValueToken }
 
   TValueToken = class(TYamlToken)
   public
-    constructor Create(startMark, endMark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
 implementation
 
 { TValueToken }
 
-constructor TValueToken.Create(startMark, endMark: TYamlMark);
+constructor TValueToken.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
 end;
 
 { TKeyToken }
 
-constructor TKeyToken.Create(startMark, endMark: TYamlMark);
+constructor TKeyToken.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
 end;
 
 { TBlockEntryToken }
 
-constructor TBlockEntryToken.Create(startMark, endMark: TYamlMark);
+constructor TBlockEntryToken.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
 end;
 
 { TFlowEntryToken }
 
-constructor TFlowEntryToken.Create(startMark, endMark: TYamlMark);
+constructor TFlowEntryToken.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
 end;
 
 { TFlowMappingEndToken }
 
-constructor TFlowMappingEndToken.Create(startMark, endMark: TYamlMark);
+constructor TFlowMappingEndToken.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
 end;
 
 { TFlowMappingStartToken }
 
-constructor TFlowMappingStartToken.Create(startMark, endMark: TYamlMark);
+constructor TFlowMappingStartToken.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
 end;
 
 { TFlowSequenceEndToken }
 
-constructor TFlowSequenceEndToken.Create(startMark, endMark: TYamlMark);
+constructor TFlowSequenceEndToken.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
 end;
 
 { TFlowSequenceStartToken }
 
-constructor TFlowSequenceStartToken.Create(startMark, endMark: TYamlMark);
+constructor TFlowSequenceStartToken.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
 end;
 
 { TDocumentEndToken }
 
-constructor TDocumentEndToken.Create(startMark, endMark: TYamlMark);
+constructor TDocumentEndToken.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
 end;
 
 { TDocumentStartToken }
 
-constructor TDocumentStartToken.Create(startMark, endMark: TYamlMark);
+constructor TDocumentStartToken.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
 end;
 
 { TStreamEndToken }
 
-constructor TStreamEndToken.Create(startMark, endMark: TYamlMark);
+constructor TStreamEndToken.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
 end;
 
 { TBlockMappingStartToken }
 
-constructor TBlockMappingStartToken.Create(startMark, endMark: TYamlMark);
+constructor TBlockMappingStartToken.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
 end;
 
 { TBlockSequenceStartToken }
 
-constructor TBlockSequenceStartToken.Create(startMark, endMark: TYamlMark);
+constructor TBlockSequenceStartToken.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
 end;
 
-constructor TYamlToken.Create(startMark, endMark: TYamlMark);
+constructor TYamlToken.Create(AStartMark, AEndMark: TYamlMark);
 begin
   inherited Create;
 
-  FStartMark := startMark;
-  FEndMark := endMark;
+  FStartMark := AStartMark;
+  FEndMark := AEndMark;
 end;
 
-constructor TStreamStartToken.Create(AEncoding: TYamlEncoding; startMark, endMark: TYamlMark);
+constructor TStreamStartToken.Create(AEncoding: TYamlEncoding; AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
   FEncoding := AEncoding;
 end;
 
-constructor TVersionDirectiveToken.Create(AMajor, AMinor: Integer; startMark, endMark: TYamlMark);
+constructor TVersionDirectiveToken.Create(AMajor, AMinor: Integer;
+  AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
   FMajor := AMajor;
   FMinor := AMinor;
 end;
 
-constructor TTagDirectiveToken.Create( AHandle, APrefix: String; startMark, endMark: TYamlMark);
+constructor TTagDirectiveToken.Create(AHandle, APrefix: String; AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
   FHandle := AHandle;
   FPrefix := APrefix;
 end;
 
-constructor TBlockEndToken.Create(startMark, endMark: TYamlMark);
+constructor TBlockEndToken.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
 end;
 
-constructor TAnchorToken.Create(AValue: String; startMark, endMark: TYamlMark);
+constructor TAnchorToken.Create(AValue: String; AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
   FValue := AValue;
 end;
 
-constructor TAliasToken.Create(AValue: String; startMark, endMark: TYamlMark);
+constructor TAliasToken.Create(AValue: String; AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
   FValue := AValue;
 end;
 
-constructor TTagToken.Create(AHandle: String; ASuffix: String; startMark, endMark: TYamlMark);
+constructor TTagToken.Create(AHandle: String; ASuffix: String; AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
   FHandle := AHandle;
   FSuffix := ASuffix;
 end;
 
-constructor TScalarToken.Create(AValue: String; AStyle: TYamlScalarStyle; startMark, endMark: TYamlMark);
+constructor TScalarToken.Create(AValue: String; AStyle: TYamlScalarStyle;
+  AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(startMark, endMark);
+  inherited Create(AStartMark, AEndMark);
   FValue := AValue;
   FScalarStyle := AStyle;
 end;
