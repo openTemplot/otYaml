@@ -19,8 +19,8 @@ type
     FStartMark: TYamlMark;
     FEndMark: TYamlMark;
   public
-    constructor Create(event_type: TYamlEventType; start_mark: TYamlMark;
-      end_mark: TYamlMark);
+    constructor Create(AEventType: TYamlEventType; AStartMark: TYamlMark;
+      AEndMark: TYamlMark);
 
     property eventType: TYamlEventType Read FEventType;
   end;
@@ -31,7 +31,7 @@ type
   private
     FEncoding: TYamlEncoding;
   public
-    constructor Create(encoding: TYamlEncoding; start_mark: TYamlMark; end_mark: TYamlMark);
+    constructor Create(AEncoding: TYamlEncoding; AStartMark: TYamlMark; AEndMark: TYamlMark);
 
     property encoding: TYamlEncoding Read FEncoding;
   end;
@@ -40,7 +40,7 @@ type
 
   TStreamEndEvent = class(TYamlEvent)
   public
-    constructor Create(start_mark: TYamlMark; end_mark: TYamlMark);
+    constructor Create(AStartMark: TYamlMark; AEndMark: TYamlMark);
   end;
 
   { TDocumentStartEvent }
@@ -52,9 +52,9 @@ type
     FImplicit: Boolean;
 
   public
-    constructor Create(versionDirective: TYamlVersionDirective;
-      tagDirectives: TYamlTagDirectives; implicit: boolean; startMark: TYamlMark;
-      endMark: TYamlMark);
+    constructor Create(AVersionDirective: TYamlVersionDirective;
+      ATagDirectives: TYamlTagDirectives; AImplicit: boolean; AStartMark: TYamlMark;
+      AEndMark: TYamlMark);
     destructor Destroy; override;
 
     property versionDirective: TYamlVersionDirective Read FVersionDirective;
@@ -69,7 +69,7 @@ type
     FImplicit: Boolean;
 
   public
-    constructor Create(implicit: Boolean; start_mark: TYamlMark; end_mark: TYamlMark);
+    constructor Create(AImplicit: Boolean; AStartMark: TYamlMark; AEndMark: TYamlMark);
 
     property implicit: Boolean Read FImplicit;
   end;
@@ -80,7 +80,7 @@ type
   private
     FAnchor: String;
   public
-    constructor Create(AAnchor: String; start_mark: TYamlMark; end_mark: TYamlMark);
+    constructor Create(const AAnchor: String; AStartMark: TYamlMark; AEndMark: TYamlMark);
 
     property anchor: String Read FAnchor;
   end;
@@ -96,11 +96,12 @@ type
     FQuotedImplicit: Boolean;
     FScalarStyle: TYamlScalarStyle;
   public
-    constructor Create(anchor, tag, Value: String; plain_implicit, quoted_implicit: Boolean;
-      style: TYamlScalarStyle; start_mark, end_mark: TYamlMark);
+    constructor Create(const AAnchor, ATag, AValue: String;
+      APlainImplicit, AQuotedImplicit: Boolean;
+      AStyle: TYamlScalarStyle; AStartMark, AEndMark: TYamlMark);
     property anchor: String Read FAnchor;
     property tag: String Read FTag;
-    property value: String Read FValue;
+    property Value: String Read FValue;
     property plainImplicit: Boolean Read FPlainImplicit;
     property quotedImplicit: Boolean Read FQuotedImplicit;
     property scalarStyle: TYamlScalarStyle Read FScalarStyle;
@@ -115,8 +116,8 @@ type
     FImplicit: Boolean;
     FSequenceStyle: TYamlSequenceStyle;
   public
-    constructor Create(anchor, tag: String; implicit: Boolean;
-      style: TYamlSequenceStyle; start_mark, end_mark: TYamlMark);
+    constructor Create(const AAnchor, ATag: String; AImplicit: Boolean;
+      AStyle: TYamlSequenceStyle; AStartMark, AEndMark: TYamlMark);
 
     property anchor: String Read FAnchor;
     property tag: String Read FTag;
@@ -128,7 +129,7 @@ type
 
   TSequenceEndEvent = class(TYamlEvent)
   public
-    constructor Create(start_mark, end_mark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
   { TMappingStartEvent }
@@ -140,8 +141,8 @@ type
     FImplicit: Boolean;
     FMappingStyle: TYamlMappingStyle;
   public
-    constructor Create(anchor, tag: String; implicit: Boolean; style: TYamlMappingStyle;
-      start_mark, end_mark: TYamlMark);
+    constructor Create(const AAnchor, ATag: String; AImplicit: Boolean; AStyle: TYamlMappingStyle;
+      AStartMark, AEndMark: TYamlMark);
     property anchor: String Read FAnchor;
     property tag: String Read FTag;
     property implicit: Boolean Read FImplicit;
@@ -152,53 +153,53 @@ type
 
   TMappingEndEvent = class(TYamlEvent)
   public
-    constructor Create(start_mark, end_mark: TYamlMark);
+    constructor Create(AStartMark, AEndMark: TYamlMark);
   end;
 
 implementation
 
 { TYamlEvent }
 
-constructor TYamlEvent.Create(event_type: TYamlEventType;
-  start_mark: TYamlMark; end_mark: TYamlMark);
+constructor TYamlEvent.Create(AEventType: TYamlEventType;
+  AStartMark: TYamlMark; AEndMark: TYamlMark);
 begin
   inherited Create;
 
-  FEventType := event_type;
-  FStartMark := start_mark;
-  FEndMark := end_mark;
+  FEventType := AEventType;
+  FStartMark := AStartMark;
+  FEndMark := AEndMark;
 end;
 
 
 { TStreamStartEvent }
 
-constructor TStreamStartEvent.Create(encoding: TYamlEncoding;
-  start_mark: TYamlMark; end_mark: TYamlMark);
+constructor TStreamStartEvent.Create(AEncoding: TYamlEncoding;
+  AStartMark: TYamlMark; AEndMark: TYamlMark);
 begin
-  inherited Create(TYamlEventType.YAML_STREAM_START_EVENT, start_mark, end_mark);
+  inherited Create(TYamlEventType.YAML_STREAM_START_EVENT, AStartMark, AEndMark);
 
-  FEncoding := encoding;
+  FEncoding := AEncoding;
 end;
 
 { TStreamEndEvent }
 
-constructor TStreamEndEvent.Create(start_mark: TYamlMark;
-  end_mark: TYamlMark);
+constructor TStreamEndEvent.Create(AStartMark: TYamlMark;
+  AEndMark: TYamlMark);
 begin
-  inherited Create(TYamlEventType.YAML_STREAM_END_EVENT, start_mark, end_mark);
+  inherited Create(TYamlEventType.YAML_STREAM_END_EVENT, AStartMark, AEndMark);
 end;
 
 { TDocumentStartEvent }
 
-constructor TDocumentStartEvent.Create(versionDirective: TYamlVersionDirective;
-  tagDirectives: TYamlTagDirectives; implicit: boolean;
-  startMark: TYamlMark; endMark: TYamlMark);
+constructor TDocumentStartEvent.Create(AVersionDirective: TYamlVersionDirective;
+  ATagDirectives: TYamlTagDirectives; AImplicit: boolean;
+  AStartMark: TYamlMark; AEndMark: TYamlMark);
 begin
-  inherited Create(TYamlEventType.YAML_DOCUMENT_START_EVENT, startMark, endMark);
+  inherited Create(TYamlEventType.YAML_DOCUMENT_START_EVENT, AStartMark, AEndMark);
 
-  FVersionDirective := versionDirective;
-  FTagDirectives := tagDirectives;
-  FImplicit := implicit;
+  FVersionDirective := AVersionDirective;
+  FTagDirectives := ATagDirectives;
+  FImplicit := AImplicit;
 
   if not Assigned(FTagDirectives) then
     FTagDirectives := TYamlTagDirectives.Create;
@@ -212,76 +213,76 @@ end;
 
 { TDocumentEndEvent }
 
-constructor TDocumentEndEvent.Create(implicit: Boolean;
-  start_mark: TYamlMark; end_mark: TYamlMark);
+constructor TDocumentEndEvent.Create(AImplicit: Boolean;
+  AStartMark: TYamlMark; AEndMark: TYamlMark);
 begin
-  inherited Create(TYamlEventType.YAML_DOCUMENT_END_EVENT, start_mark, end_mark);
+  inherited Create(TYamlEventType.YAML_DOCUMENT_END_EVENT, AStartMark, AEndMark);
 
-  FImplicit := implicit;
+  FImplicit := AImplicit;
 end;
 
 { TMappingStartEvent }
 
-constructor TMappingStartEvent.Create(anchor, tag: String; implicit: Boolean;
-  style: TYamlMappingStyle; start_mark, end_mark: TYamlMark);
+constructor TMappingStartEvent.Create(const AAnchor, ATag: String; AImplicit: Boolean;
+  AStyle: TYamlMappingStyle; AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(TYamlEventType.YAML_MAPPING_START_EVENT, start_mark, end_mark);
+  inherited Create(TYamlEventType.YAML_MAPPING_START_EVENT, AStartMark, AEndMark);
 
-  FAnchor := anchor;
-  FTag := tag;
-  FImplicit := implicit;
-  FMappingStyle := style;
+  FAnchor := AAnchor;
+  FTag := ATag;
+  FImplicit := AImplicit;
+  FMappingStyle := AStyle;
 end;
 
 { TMappingEndEvent }
 
-constructor TMappingEndEvent.Create(start_mark, end_mark: TYamlMark);
+constructor TMappingEndEvent.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(TYamlEventType.YAML_MAPPING_END_EVENT, start_mark, end_mark);
+  inherited Create(TYamlEventType.YAML_MAPPING_END_EVENT, AStartMark, AEndMark);
 end;
 
 { TScalarEvent }
 
-constructor TScalarEvent.Create(anchor, tag, Value: String; plain_implicit,
-  quoted_implicit: Boolean; style: TYamlScalarStyle; start_mark, end_mark: TYamlMark);
+constructor TScalarEvent.Create(const AAnchor, ATag, AValue: String; APlainImplicit,
+  AQuotedImplicit: Boolean; AStyle: TYamlScalarStyle; AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(TYamlEventType.YAML_SCALAR_EVENT, start_mark, end_mark);
+  inherited Create(TYamlEventType.YAML_SCALAR_EVENT, AStartMark, AEndMark);
 
-  FAnchor := anchor;
-  FTag := tag;
-  FValue := Value;
-  FPlainImplicit := plain_implicit;
-  FQuotedImplicit := quoted_implicit;
-  FScalarStyle := style;
+  FAnchor := AAnchor;
+  FTag := ATag;
+  FValue := AValue;
+  FPlainImplicit := APlainImplicit;
+  FQuotedImplicit := AQuotedImplicit;
+  FScalarStyle := AStyle;
 end;
 
 { TSequenceStartEvent }
 
-constructor TSequenceStartEvent.Create(anchor, tag: String;
-  implicit: Boolean; style: TYamlSequenceStyle; start_mark,
-  end_mark: TYamlMark);
+constructor TSequenceStartEvent.Create(const AAnchor, ATag: String;
+  AImplicit: Boolean; AStyle: TYamlSequenceStyle; AStartMark,
+  AEndMark: TYamlMark);
 begin
-  inherited Create(TYamlEventType.YAML_SEQUENCE_START_EVENT, start_mark, end_mark);
+  inherited Create(TYamlEventType.YAML_SEQUENCE_START_EVENT, AStartMark, AEndMark);
 
-  FAnchor := anchor;
-  FTag := tag;
-  FImplicit := implicit;
-  FSequenceStyle := style;
+  FAnchor := AAnchor;
+  FTag := ATag;
+  FImplicit := AImplicit;
+  FSequenceStyle := AStyle;
 end;
 
 { TSequenceEndEvent }
 
-constructor TSequenceEndEvent.Create(start_mark, end_mark: TYamlMark);
+constructor TSequenceEndEvent.Create(AStartMark, AEndMark: TYamlMark);
 begin
-  inherited Create(TYamlEventType.YAML_SEQUENCE_END_EVENT, start_mark, end_mark);
+  inherited Create(TYamlEventType.YAML_SEQUENCE_END_EVENT, AStartMark, AEndMark);
 end;
 
 { TAliasEvent }
 
-constructor TAliasEvent.Create(AAnchor: String; start_mark: TYamlMark;
-  end_mark: TYamlMark);
+constructor TAliasEvent.Create(const AAnchor: String; AStartMark: TYamlMark;
+  AEndMark: TYamlMark);
 begin
-  inherited Create(TYamlEventType.YAML_ALIAS_EVENT, start_mark, end_mark);
+  inherited Create(TYamlEventType.YAML_ALIAS_EVENT, AStartMark, AEndMark);
   FAnchor := AAnchor;
 end;
 

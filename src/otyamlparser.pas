@@ -24,7 +24,7 @@ type
     FMark: TYamlMark;
 
   public
-    constructor Create(AProblem: String; mark: TYamlMark);
+    constructor Create(const AProblem: String; AMark: TYamlMark);
   end;
 
   EYamlParserErrorContext = class(Exception)
@@ -34,8 +34,8 @@ type
     FProblemMark: TYamlMark;
 
   public
-    constructor Create(AContext: String; context_mark: TYamlMark;
-      AProblem: String; problem_mark: TYamlMark);
+    constructor Create(const AContext: String; AContextMark: TYamlMark;
+      const AProblem: String; AProblemMark: TYamlMark);
 
     property problemMark: TYamlMark Read FProblemMark;
   end;
@@ -71,41 +71,41 @@ type
     (** The list of TAG directives. *)
     tagDirectives: TYamlTagDirectives;
 
-    procedure set_parser_error(AProblem: String; mark: TYamlMark);
-    procedure set_parser_error_context(AContext: String; context_mark: TYamlMark;
-      AProblem: String; problem_mark: TYamlMark);
+    procedure SetParserError(const AProblem: String; AMark: TYamlMark);
+    procedure SetParserErrorContext(const AContext: String; AContextMark: TYamlMark;
+      const AProblem: String; AProblemMark: TYamlMark);
 
-    function state_machine: TYamlEvent;
-    function parse_stream_start: TYamlEvent;
-    function parse_document_start(implicit: Boolean): TYamlEvent;
-    function parse_document_end: TYamlEvent;
-    function parse_document_content: TYamlEvent;
-    function parse_node(block: Boolean; indentless_sequence: Boolean): TYamlEvent;
-    function parse_block_sequence_entry(First: Boolean): TYamlEvent;
-    function parse_indentless_sequence_entry: TYamlEvent;
-    function parse_block_mapping_key(First: Boolean): TYamlEvent;
-    function parse_block_mapping_value: TYamlEvent;
-    function parse_flow_sequence_entry(First: Boolean): TYamlEvent;
-    function parse_flow_sequence_entry_mapping_key: TYamlEvent;
-    function parse_flow_sequence_entry_mapping_value: TYamlEvent;
-    function parse_flow_sequence_entry_mapping_end: TYamlEvent;
-    function parse_flow_mapping_key(First: Boolean): TYamlEvent;
-    function parse_flow_mapping_value(empty: Boolean): TYamlEvent;
+    function StateMachine: TYamlEvent;
+    function ParseStreamStart: TYamlEvent;
+    function ParseDocumentStart(AImplicit: Boolean): TYamlEvent;
+    function ParseDocumentEnd: TYamlEvent;
+    function ParseDocumentContent: TYamlEvent;
+    function ParseNode(ABlock: Boolean; AIndentlessSequence: Boolean): TYamlEvent;
+    function ParseBlockSequenceEntry(AFirst: Boolean): TYamlEvent;
+    function ParseIndentlessSequenceEntry: TYamlEvent;
+    function ParseBlockMappingKey(AFirst: Boolean): TYamlEvent;
+    function ParseBlockMappingValue: TYamlEvent;
+    function ParseFlowSequenceEntry(AFirst: Boolean): TYamlEvent;
+    function ParseBlockSequenceEntryMappingKey: TYamlEvent;
+    function ParseFlowSequenceEntryMappingValue: TYamlEvent;
+    function ParseFlowSequenceEntryMappingEnd: TYamlEvent;
+    function ParseFlowMappingKey(AFirst: Boolean): TYamlEvent;
+    function ParseFlowMappingValue(AEmpty: Boolean): TYamlEvent;
 
-    procedure process_directives(var version_directive: TYamlVersionDirective);
-    function process_empty_scalar(mark: TYamlMark): TYamlEvent;
+    procedure ProcessDirectives(var AVersionDirective: TYamlVersionDirective);
+    function ProcessEmptyScalar(AMark: TYamlMark): TYamlEvent;
 
-    procedure append_tag_directive(const Value: TYamlTagDirective;
-      allow_duplicates: Boolean; mark: TYamlMark);
+    procedure AppendTagDirective(const AValue: TYamlTagDirective;
+      AAllowDuplicates: Boolean; AMark: TYamlMark);
 
   public
     constructor Create;
     destructor Destroy; override;
 
     procedure SetInput(AStream: TStream);
-    procedure SetEncoding(encoding: TYamlEncoding);
+    procedure SetEncoding(AEncoding: TYamlEncoding);
 
-    function parse: TYamlEvent;
+    function Parse: TYamlEvent;
 
   end;
 
@@ -113,19 +113,19 @@ implementation
 
 { EYamlParserError }
 
-constructor EYamlParserError.Create(AProblem: String; mark: TYamlMark);
+constructor EYamlParserError.Create(const AProblem: String; AMark: TYamlMark);
 begin
   inherited Create(AProblem);
-  FMark := mark;
+  FMark := AMark;
 end;
 
-constructor EYamlParserErrorContext.Create(AContext: String; context_mark: TYamlMark;
-  AProblem: String; problem_mark: TYamlMark);
+constructor EYamlParserErrorContext.Create(const AContext: String; AContextMark: TYamlMark;
+  const AProblem: String; AProblemMark: TYamlMark);
 begin
   inherited Create(AProblem);
   FContext := AContext;
-  FContextMark := context_mark;
-  FProblemMark := problem_mark;
+  FContextMark := AContextMark;
+  FProblemMark := AProblemMark;
 end;
 
 {*
@@ -171,88 +171,88 @@ end;
 
 { TYamlParser }
 
-procedure TYamlParser.set_parser_error(AProblem: String; mark: TYamlMark);
+procedure TYamlParser.SetParserError(const AProblem: String; AMark: TYamlMark);
 begin
-  raise EYamlParserError.Create(AProblem, mark);
+  raise EYamlParserError.Create(AProblem, AMark);
 end;
 
-procedure TYamlParser.set_parser_error_context(AContext: String; context_mark: TYamlMark;
-  AProblem: String; problem_mark: TYamlMark);
+procedure TYamlParser.SetParserErrorContext(const AContext: String; AContextMark: TYamlMark;
+  const AProblem: String; AProblemMark: TYamlMark);
 begin
-  raise EYamlParserErrorContext.Create(AContext, context_mark, AProblem, problem_mark);
+  raise EYamlParserErrorContext.Create(AContext, AContextMark, AProblem, AProblemMark);
 end;
 
-function TYamlParser.state_machine: TYamlEvent;
+function TYamlParser.StateMachine: TYamlEvent;
 begin
   case state of
     YAML_PARSE_STREAM_START_STATE:
-      Exit(parse_stream_start);
+      Exit(ParseStreamStart);
 
     YAML_PARSE_IMPLICIT_DOCUMENT_START_STATE:
-      Exit(parse_document_start(True));
+      Exit(ParseDocumentStart(True));
 
     YAML_PARSE_DOCUMENT_START_STATE:
-      Exit(parse_document_start(False));
+      Exit(ParseDocumentStart(False));
 
     YAML_PARSE_DOCUMENT_CONTENT_STATE:
-      Exit(parse_document_content);
+      Exit(ParseDocumentContent);
 
     YAML_PARSE_DOCUMENT_END_STATE:
-      Exit(parse_document_end);
+      Exit(ParseDocumentEnd);
 
     YAML_PARSE_BLOCK_NODE_STATE:
-      Exit(parse_node(True, False));
+      Exit(ParseNode(True, False));
 
     YAML_PARSE_BLOCK_NODE_OR_INDENTLESS_SEQUENCE_STATE:
-      Exit(parse_node(True, True));
+      Exit(ParseNode(True, True));
 
     YAML_PARSE_FLOW_NODE_STATE:
-      Exit(parse_node(False, False));
+      Exit(ParseNode(False, False));
 
     YAML_PARSE_BLOCK_SEQUENCE_FIRST_ENTRY_STATE:
-      Exit(parse_block_sequence_entry(True));
+      Exit(ParseBlockSequenceEntry(True));
 
     YAML_PARSE_BLOCK_SEQUENCE_ENTRY_STATE:
-      Exit(parse_block_sequence_entry(False));
+      Exit(ParseBlockSequenceEntry(False));
 
     YAML_PARSE_INDENTLESS_SEQUENCE_ENTRY_STATE:
-      Exit(parse_indentless_sequence_entry);
+      Exit(ParseIndentlessSequenceEntry);
 
     YAML_PARSE_BLOCK_MAPPING_FIRST_KEY_STATE:
-      Exit(parse_block_mapping_key(True));
+      Exit(ParseBlockMappingKey(True));
 
     YAML_PARSE_BLOCK_MAPPING_KEY_STATE:
-      Exit(parse_block_mapping_key(False));
+      Exit(ParseBlockMappingKey(False));
 
     YAML_PARSE_BLOCK_MAPPING_VALUE_STATE:
-      Exit(parse_block_mapping_value);
+      Exit(ParseBlockMappingValue);
 
     YAML_PARSE_FLOW_SEQUENCE_FIRST_ENTRY_STATE:
-      Exit(parse_flow_sequence_entry(True));
+      Exit(ParseFlowSequenceEntry(True));
 
     YAML_PARSE_FLOW_SEQUENCE_ENTRY_STATE:
-      Exit(parse_flow_sequence_entry(False));
+      Exit(ParseFlowSequenceEntry(False));
 
     YAML_PARSE_FLOW_SEQUENCE_ENTRY_MAPPING_KEY_STATE:
-      Exit(parse_flow_sequence_entry_mapping_key);
+      Exit(ParseBlockSequenceEntryMappingKey);
 
     YAML_PARSE_FLOW_SEQUENCE_ENTRY_MAPPING_VALUE_STATE:
-      Exit(parse_flow_sequence_entry_mapping_value);
+      Exit(ParseFlowSequenceEntryMappingValue);
 
     YAML_PARSE_FLOW_SEQUENCE_ENTRY_MAPPING_END_STATE:
-      Exit(parse_flow_sequence_entry_mapping_end);
+      Exit(ParseFlowSequenceEntryMappingEnd);
 
     YAML_PARSE_FLOW_MAPPING_FIRST_KEY_STATE:
-      Exit(parse_flow_mapping_key(True));
+      Exit(ParseFlowMappingKey(True));
 
     YAML_PARSE_FLOW_MAPPING_KEY_STATE:
-      Exit(parse_flow_mapping_key(False));
+      Exit(ParseFlowMappingKey(False));
 
     YAML_PARSE_FLOW_MAPPING_VALUE_STATE:
-      Exit(parse_flow_mapping_value(False));
+      Exit(ParseFlowMappingValue(False));
 
     YAML_PARSE_FLOW_MAPPING_EMPTY_VALUE_STATE:
-      Exit(parse_flow_mapping_value(True));
+      Exit(ParseFlowMappingValue(True));
     else
       assert(False);      //* Invalid state. */
   end;
@@ -260,7 +260,7 @@ begin
   Exit(nil);
 end;
 
-function TYamlParser.parse_stream_start: TYamlEvent;
+function TYamlParser.ParseStreamStart: TYamlEvent;
 var
   token: TYamlToken;
   ssToken: TStreamStartToken;
@@ -270,16 +270,16 @@ begin
     Exit(nil);
 
   if not (token is TStreamStartToken) then
-    set_parser_error('did not find expected <stream-start>', token.start_mark);
+    SetParserError('did not find expected <stream-start>', token.startMark);
 
   ssToken := TStreamStartToken(token);
 
   state := YAML_PARSE_IMPLICIT_DOCUMENT_START_STATE;
-  Result := TStreamStartEvent.Create(ssToken.encoding, ssToken.start_mark, ssToken.start_mark);
+  Result := TStreamStartEvent.Create(ssToken.encoding, ssToken.startMark, ssToken.startMark);
   FScanner.SkipToken;
 end;
 
-function TYamlParser.parse_document_start(implicit: Boolean): TYamlEvent;
+function TYamlParser.ParseDocumentStart(AImplicit: Boolean): TYamlEvent;
 var
   token: TYamlToken;
   versionDirective: TYamlVersionDirective;
@@ -295,7 +295,7 @@ begin
 
   // Parse extra document end indicators.
 
-  if not implicit then begin
+  if not AImplicit then begin
     while (token is TDocumentEndToken) do begin
       FScanner.SkipToken;
       token := FScanner.Peek;
@@ -304,37 +304,37 @@ begin
     end;
   end;
 
-  // Parse an implicit document.
+  // Parse an AImplicit document.
 
-  if implicit and (not (token is TVersionDirectiveToken)) and
+  if AImplicit and (not (token is TVersionDirectiveToken)) and
     (not (token is TTagDirectiveToken)) and
     (not (token is TDocumentStartToken)) and
     (not (token is TStreamEndToken)) then begin
-    process_directives(versionDirective);
+    ProcessDirectives(versionDirective);
     states.push(YAML_PARSE_DOCUMENT_END_STATE);
     state := YAML_PARSE_BLOCK_NODE_STATE;
 
     versionDirective.Initialize;
     Exit(TDocumentStartEvent.Create(versionDirective, nil, True,
-      token.start_mark, token.end_mark));
+      token.startMark, token.endMark));
   end
 
   // Parse an explicit document.
 
   else
   if not (token is TStreamEndToken) then begin
-    startMark := token.start_mark;
+    startMark := token.startMark;
     SetLength(tagDirectives, 0);
-    process_directives(versionDirective);
+    ProcessDirectives(versionDirective);
     token := FScanner.Peek;
     if not Assigned(token) then
       Exit(nil);
     if not (token is TDocumentStartToken) then begin
-      set_parser_error('did not find expected <document start>', token.start_mark);
+      SetParserError('did not find expected <document start>', token.startMark);
     end;
     states.Push(YAML_PARSE_DOCUMENT_END_STATE);
     state := YAML_PARSE_DOCUMENT_CONTENT_STATE;
-    endMark := token.end_mark;
+    endMark := token.endMark;
 
     Result := TDocumentStartEvent.Create(versionDirective, tagDirectives, False,
       startMark, endMark);
@@ -346,17 +346,17 @@ begin
 
   else begin
     state := YAML_PARSE_END_STATE;
-    Result := TStreamEndEvent.Create(token.start_mark, token.end_mark);
+    Result := TStreamEndEvent.Create(token.startMark, token.endMark);
     FScanner.SkipToken;
     Exit;
   end;
 end;
 
-function TYamlParser.parse_document_end: TYamlEvent;
+function TYamlParser.ParseDocumentEnd: TYamlEvent;
 var
   token: TYamlToken;
-  start_mark: TYamlMark;
-  end_mark: TYamlMark;
+  startMark: TYamlMark;
+  endMark: TYamlMark;
   implicit: Boolean;
 begin
   implicit := True;
@@ -365,11 +365,11 @@ begin
   if not Assigned(token) then
     Exit(nil);
 
-  start_mark := token.start_mark;
-  end_mark := token.start_mark;
+  startMark := token.startMark;
+  endMark := token.startMark;
 
   if (token is TDocumentEndToken) then begin
-    end_mark := token.end_mark;
+    endMark := token.endMark;
     FScanner.SkipToken;
     implicit := False;
   end;
@@ -377,10 +377,10 @@ begin
   SetLength(tagDirectives, 0);
 
   state := YAML_PARSE_DOCUMENT_START_STATE;
-  Result := TDocumentEndEvent.Create(implicit, start_mark, end_mark);
+  Result := TDocumentEndEvent.Create(implicit, startMark, endMark);
 end;
 
-function TYamlParser.parse_document_content: TYamlEvent;
+function TYamlParser.ParseDocumentContent: TYamlEvent;
 var
   token: TYamlToken;
 begin
@@ -394,30 +394,30 @@ begin
     (token is TDocumentEndToken) or
     (token is TStreamEndToken) then begin
     state := states.Pop;
-    Result := process_empty_scalar(token.start_mark);
+    Result := ProcessEmptyScalar(token.startMark);
   end
   else begin
-    Result := parse_node(True, False);
+    Result := ParseNode(True, False);
   end;
 end;
 
-function TYamlParser.parse_node(block: Boolean; indentless_sequence: Boolean): TYamlEvent;
+function TYamlParser.ParseNode(ABlock: Boolean; AIndentlessSequence: Boolean): TYamlEvent;
 var
   token: TYamlToken;
   anchor: String;
-  has_tag: Boolean;
+  hasTag: Boolean;
   tag: String;
-  tag_handle: String;
-  tag_suffix: String;
-  start_mark: TYamlMark;
-  end_mark: TYamlMark;
-  tag_mark: TYamlMark;
+  tagHandle: String;
+  tagSuffix: String;
+  startMark: TYamlMark;
+  endMark: TYamlMark;
+  tagMark: TYamlMark;
   implicit: Boolean;
-  tag_directive: TYamlTagDirective;
-  plain_implicit: Boolean;
-  quoted_implicit: Boolean;
+  tagDirecvtive: TYamlTagDirective;
+  plainImplicit: Boolean;
+  quotedImplicit: Boolean;
 begin
-  has_tag := False;
+  hasTag := False;
   tag := '';
 
   token := FScanner.Peek;
@@ -426,29 +426,29 @@ begin
 
   if (token is TAliasToken) then begin
     state := states.Pop;
-    Result := TAliasEvent.Create(TAliasToken(token).Value, token.start_mark, token.end_mark);
+    Result := TAliasEvent.Create(TAliasToken(token).Value, token.startMark, token.endMark);
     FScanner.SkipToken;
     Exit;
   end
 
   else begin
-    start_mark := token.start_mark;
-    end_mark := token.start_mark;
+    startMark := token.startMark;
+    endMark := token.startMark;
 
     if (token is TAnchorToken) then begin
       anchor := TAnchorToken(token).Value;
-      start_mark := token.start_mark;
-      end_mark := token.end_mark;
+      startMark := token.startMark;
+      endMark := token.endMark;
       FScanner.SkipToken;
       token := FScanner.Peek;
       if not Assigned(token) then
         Exit(nil);
       if (token is TTagToken) then begin
-        has_tag := True;
-        tag_handle := TTagToken(token).handle;
-        tag_suffix := TTagToken(token).suffix;
-        tag_mark := token.start_mark;
-        end_mark := token.end_mark;
+        hasTag := True;
+        tagHandle := TTagToken(token).handle;
+        tagSuffix := TTagToken(token).suffix;
+        tagMark := token.startMark;
+        endMark := token.endMark;
         FScanner.SkipToken;
         token := FScanner.Peek;
         if not Assigned(token) then
@@ -457,19 +457,19 @@ begin
     end
     else
     if (token is TTagToken) then begin
-      has_tag := True;
-      tag_handle := TTagToken(token).handle;
-      tag_suffix := TTagToken(token).suffix;
-      start_mark := token.start_mark;
-      tag_mark := token.start_mark;
-      end_mark := token.end_mark;
+      hasTag := True;
+      tagHandle := TTagToken(token).handle;
+      tagSuffix := TTagToken(token).suffix;
+      startMark := token.startMark;
+      tagMark := token.startMark;
+      endMark := token.endMark;
       FScanner.SkipToken;
       token := FScanner.Peek;
       if not Assigned(token) then
         Exit(nil);
       if (token is TAnchorToken) then begin
         anchor := TAnchorToken(token).Value;
-        end_mark := token.end_mark;
+        endMark := token.endMark;
         FScanner.SkipToken;
         token := FScanner.Peek;
         if not Assigned(token) then
@@ -477,82 +477,82 @@ begin
       end;
     end;
 
-    if has_tag then begin
-      if (tag_handle = '') then begin
-        tag := tag_suffix;
+    if hasTag then begin
+      if (tagHandle = '') then begin
+        tag := tagSuffix;
       end
       else begin
-        for tag_directive in tagDirectives do begin
-          if (tag_directive.Handle = tag_handle) then begin
-            tag := tag_directive.Prefix + tag_suffix;
+        for tagDirecvtive in tagDirectives do begin
+          if (tagDirecvtive.Handle = tagHandle) then begin
+            tag := tagDirecvtive.Prefix + tagSuffix;
             break;
           end;
         end;
         if (tag = '') then
-          set_parser_error_context('while parsing a node', start_mark,
-            'found undefined tag handle', tag_mark);
+          SetParserErrorContext('while parsing a node', startMark,
+            'found undefined tag handle', tagMark);
       end;
     end;
 
-    implicit := (not has_tag) or (tag = '');
-    if indentless_sequence and (token is TBlockEntryToken) then begin
-      end_mark := token.end_mark;
+    implicit := (not hasTag) or (tag = '');
+    if AIndentlessSequence and (token is TBlockEntryToken) then begin
+      endMark := token.endMark;
       state := YAML_PARSE_INDENTLESS_SEQUENCE_ENTRY_STATE;
       Result := TSequenceStartEvent.Create(anchor, tag, implicit,
-        ysqBlockSequence, start_mark, end_mark);
+        ysqBlockSequence, startMark, endMark);
       Exit;
     end
     else begin
       if (token is TScalarToken) then begin
-        plain_implicit := False;
-        quoted_implicit := False;
-        end_mark := token.end_mark;
-        if ((TScalarToken(token).scalar_style = yssPlainScalar) and (not has_tag))
-          or (has_tag and (tag = '!')) then begin
-          plain_implicit := True;
+        plainImplicit := False;
+        quotedImplicit := False;
+        endMark := token.endMark;
+        if ((TScalarToken(token).scalarStyle = yssPlainScalar) and (not hasTag))
+          or (hasTag and (tag = '!')) then begin
+          plainImplicit := True;
         end
         else
-        if (not has_tag) then begin
-          quoted_implicit := True;
+        if (not hasTag) then begin
+          quotedImplicit := True;
         end;
         state := states.Pop;
         Result := TScalarEvent.Create(anchor, tag,
           TScalarToken(token).Value,
-          plain_implicit, quoted_implicit,
-          TScalarToken(token).scalar_style, start_mark, end_mark);
+          plainImplicit, quotedImplicit,
+          TScalarToken(token).scalarStyle, startMark, endMark);
         FScanner.SkipToken;
         Exit;
       end
       else
       if (token is TFlowSequenceStartToken) then begin
-        end_mark := token.end_mark;
+        endMark := token.endMark;
         state := YAML_PARSE_FLOW_SEQUENCE_FIRST_ENTRY_STATE;
         Result := TSequenceStartEvent.Create(anchor, tag, implicit,
-          ysqFlowSequence, start_mark, end_mark);
+          ysqFlowSequence, startMark, endMark);
         Exit;
       end
       else
       if (token is TFlowMappingStartToken) then begin
-        end_mark := token.end_mark;
+        endMark := token.endMark;
         state := YAML_PARSE_FLOW_MAPPING_FIRST_KEY_STATE;
         Result := TMappingStartEvent.Create(anchor, tag, implicit,
-          ympFlowMapping, start_mark, end_mark);
+          ympFlowMapping, startMark, endMark);
         Exit;
       end
       else
-      if (block and (token is TBlockSequenceStartToken)) then begin
-        end_mark := token.end_mark;
+      if (ABlock and (token is TBlockSequenceStartToken)) then begin
+        endMark := token.endMark;
         state := YAML_PARSE_BLOCK_SEQUENCE_FIRST_ENTRY_STATE;
         Result := TSequenceStartEvent.Create(anchor, tag, implicit,
-          ysqBlockSequence, start_mark, end_mark);
+          ysqBlockSequence, startMark, endMark);
         Exit;
       end
       else
-      if (block and (token is TBlockMappingStartToken)) then begin
-        end_mark := token.end_mark;
+      if (ABlock and (token is TBlockMappingStartToken)) then begin
+        endMark := token.endMark;
         state := YAML_PARSE_BLOCK_MAPPING_FIRST_KEY_STATE;
         Result := TMappingStartEvent.Create(anchor, tag, implicit,
-          ympBlockMapping, start_mark, end_mark);
+          ympBlockMapping, startMark, endMark);
         Exit;
       end
       else
@@ -560,31 +560,31 @@ begin
         state := states.Pop;
         Result := TScalarEvent.Create(anchor, tag, '',
           implicit, False, yssPlainScalar,
-          start_mark, end_mark);
+          startMark, endMark);
         Exit;
       end
       else begin
-        if block then
-          set_parser_error_context(
-            'while parsing a block node', start_mark,
-            'did not find expected node content', token.start_mark)
+        if ABlock then
+          SetParserErrorContext(
+            'while parsing a block node', startMark,
+            'did not find expected node content', token.startMark)
         else
-          set_parser_error_context(
-            'while parsing a flow node', start_mark,
-            'did not find expected node content', token.start_mark);
+          SetParserErrorContext(
+            'while parsing a flow node', startMark,
+            'did not find expected node content', token.startMark);
       end;
     end;
   end;
 end;
 
-function TYamlParser.parse_block_sequence_entry(First: Boolean): TYamlEvent;
+function TYamlParser.ParseBlockSequenceEntry(AFirst: Boolean): TYamlEvent;
 var
   token: TYamlToken;
   mark: TYamlMark;
 begin
-  if (First) then begin
+  if (AFirst) then begin
     token := FScanner.Peek;
-    marks.Push(token.start_mark);
+    marks.Push(token.startMark);
     FScanner.SkipToken;
   end;
 
@@ -593,7 +593,7 @@ begin
     Exit(nil);
 
   if (token is TBlockEntryToken) then begin
-    mark := token.end_mark;
+    mark := token.endMark;
     FScanner.SkipToken;
     token := FScanner.Peek;
     if not Assigned(token) then
@@ -601,11 +601,11 @@ begin
     if (not (token is TBlockEntryToken)) and
       (not (token is TBlockEndToken)) then begin
       states.Push(YAML_PARSE_BLOCK_SEQUENCE_ENTRY_STATE);
-      Exit(parse_node(True, False));
+      Exit(ParseNode(True, False));
     end
     else begin
       state := YAML_PARSE_BLOCK_SEQUENCE_ENTRY_STATE;
-      Exit(process_empty_scalar(mark));
+      Exit(ProcessEmptyScalar(mark));
     end;
   end
 
@@ -613,18 +613,18 @@ begin
   if (token is TBlockEndToken) then begin
     state := states.Pop;
     marks.Pop;
-    Result := TSequenceEndEvent.Create(token.start_mark, token.end_mark);
+    Result := TSequenceEndEvent.Create(token.startMark, token.endMark);
     FScanner.SkipToken;
     Exit;
   end
   else begin
-    set_parser_error_context(
+    SetParserErrorContext(
       'while parsing a block collection', marks.Pop,
-      'did not find expected "-" indicator', token.start_mark);
+      'did not find expected "-" indicator', token.startMark);
   end;
 end;
 
-function TYamlParser.parse_indentless_sequence_entry: TYamlEvent;
+function TYamlParser.ParseIndentlessSequenceEntry: TYamlEvent;
 var
   token: TYamlToken;
   mark: TYamlMark;
@@ -634,7 +634,7 @@ begin
     Exit(nil);
 
   if (token is TBlockEntryToken) then begin
-    mark := token.end_mark;
+    mark := token.endMark;
     FScanner.SkipToken;
     token := FScanner.Peek;
     if not Assigned(token) then
@@ -644,29 +644,29 @@ begin
       (not (token is TValueToken)) and
       (not (token is TBlockEndToken)) then begin
       states.Push(YAML_PARSE_INDENTLESS_SEQUENCE_ENTRY_STATE);
-      Exit(parse_node(True, False));
+      Exit(ParseNode(True, False));
     end
     else begin
       state := YAML_PARSE_INDENTLESS_SEQUENCE_ENTRY_STATE;
-      Exit(process_empty_scalar(mark));
+      Exit(ProcessEmptyScalar(mark));
     end;
   end
 
   else begin
     state := states.Pop;
-    Result := TSequenceEndEvent.Create(token.start_mark, token.start_mark);
+    Result := TSequenceEndEvent.Create(token.startMark, token.startMark);
     Exit;
   end;
 end;
 
-function TYamlParser.parse_block_mapping_key(First: Boolean): TYamlEvent;
+function TYamlParser.ParseBlockMappingKey(AFirst: Boolean): TYamlEvent;
 var
   token: TYamlToken;
   mark: TYamlMark;
 begin
-  if (First) then begin
+  if (AFirst) then begin
     token := FScanner.Peek;
-    marks.Push(token.start_mark);
+    marks.Push(token.startMark);
     FScanner.SkipToken;
   end;
 
@@ -675,7 +675,7 @@ begin
     Exit(nil);
 
   if (token is TKeyToken) then begin
-    mark := token.end_mark;
+    mark := token.endMark;
     FScanner.SkipToken;
     token := FScanner.Peek;
     if not Assigned(token) then
@@ -684,11 +684,11 @@ begin
       (not (token is TValueToken)) and
       (not (token is TBlockEndToken)) then begin
       states.Push(YAML_PARSE_BLOCK_MAPPING_VALUE_STATE);
-      Exit(parse_node(True, True));
+      Exit(ParseNode(True, True));
     end
     else begin
       state := YAML_PARSE_BLOCK_MAPPING_VALUE_STATE;
-      Exit(process_empty_scalar(mark));
+      Exit(ProcessEmptyScalar(mark));
     end;
   end
 
@@ -696,20 +696,20 @@ begin
   if (token is TBlockEndToken) then begin
     state := states.Pop;
     marks.Pop;
-    Result := TMappingEndEvent.Create(token.start_mark, token.end_mark);
+    Result := TMappingEndEvent.Create(token.startMark, token.endMark);
     FScanner.SkipToken;
     Exit;
     ;
   end
 
   else begin
-    set_parser_error_context(
+    SetParserErrorContext(
       'while parsing a block mapping', marks.Pop,
-      'did not find expected key', token.start_mark);
+      'did not find expected key', token.startMark);
   end;
 end;
 
-function TYamlParser.parse_block_mapping_value: TYamlEvent;
+function TYamlParser.ParseBlockMappingValue: TYamlEvent;
 var
   token: TYamlToken;
   mark: TYamlMark;
@@ -719,7 +719,7 @@ begin
     Exit(nil);
 
   if (token is TValueToken) then begin
-    mark := token.end_mark;
+    mark := token.endMark;
     FScanner.SkipToken;
     token := FScanner.Peek;
     if not Assigned(token) then
@@ -728,28 +728,28 @@ begin
       (not (token is TValueToken)) and
       (not (token is TBlockEndToken)) then begin
       states.Push(YAML_PARSE_BLOCK_MAPPING_KEY_STATE);
-      Exit(parse_node(True, True));
+      Exit(ParseNode(True, True));
     end
     else begin
       state := YAML_PARSE_BLOCK_MAPPING_KEY_STATE;
-      Exit(process_empty_scalar(mark));
+      Exit(ProcessEmptyScalar(mark));
     end;
   end
 
   else begin
     state := YAML_PARSE_BLOCK_MAPPING_KEY_STATE;
-    Exit(process_empty_scalar(token.start_mark));
+    Exit(ProcessEmptyScalar(token.startMark));
   end;
 
 end;
 
-function TYamlParser.parse_flow_sequence_entry(First: Boolean): TYamlEvent;
+function TYamlParser.ParseFlowSequenceEntry(AFirst: Boolean): TYamlEvent;
 var
   token: TYamlToken;
 begin
-  if (First) then begin
+  if (AFirst) then begin
     token := FScanner.Peek;
-    marks.Push(token.start_mark);
+    marks.Push(token.startMark);
     FScanner.SkipToken;
   end;
 
@@ -758,7 +758,7 @@ begin
     Exit(nil);
 
   if not (token is TFlowSequenceEndToken) then begin
-    if (not First) then begin
+    if (not AFirst) then begin
       if (token is TFlowEntryToken) then begin
         FScanner.SkipToken;
         token := FScanner.Peek;
@@ -766,9 +766,9 @@ begin
           Exit(nil);
       end
       else begin
-        set_parser_error_context(
+        SetParserErrorContext(
           'while parsing a flow sequence', marks.Pop,
-          'did not find expected "," or "]"', token.start_mark);
+          'did not find expected "," or "]"', token.startMark);
       end;
     end;
 
@@ -776,7 +776,7 @@ begin
       state := YAML_PARSE_FLOW_SEQUENCE_ENTRY_MAPPING_KEY_STATE;
       Result := TMappingStartEvent.Create('', '',
         True, ympFlowMapping,
-        token.start_mark, token.end_mark);
+        token.startMark, token.endMark);
       FScanner.SkipToken;
       Exit;
     end
@@ -784,18 +784,18 @@ begin
     else
     if not (token is TFlowSequenceEndToken) then begin
       states.Push(YAML_PARSE_FLOW_SEQUENCE_ENTRY_STATE);
-      Exit(parse_node(False, False));
+      Exit(ParseNode(False, False));
     end;
   end;
 
   state := states.Pop;
   marks.Pop;
-  Result := TSequenceEndEvent.Create(token.start_mark, token.end_mark);
+  Result := TSequenceEndEvent.Create(token.startMark, token.endMark);
   FScanner.SkipToken;
   Exit;
 end;
 
-function TYamlParser.parse_flow_sequence_entry_mapping_key: TYamlEvent;
+function TYamlParser.ParseBlockSequenceEntryMappingKey: TYamlEvent;
 var
   token: TYamlToken;
   mark: TYamlMark;
@@ -807,17 +807,17 @@ begin
   if (not (token is TValueToken)) and (not (token is TFlowEntryToken))
     and (not (token is TFlowSequenceEndToken)) then begin
     states.Push(YAML_PARSE_FLOW_SEQUENCE_ENTRY_MAPPING_VALUE_STATE);
-    Exit(parse_node(False, False));
+    Exit(ParseNode(False, False));
   end
   else begin
-    mark := token.end_mark;
+    mark := token.endMark;
     FScanner.SkipToken;
     state := YAML_PARSE_FLOW_SEQUENCE_ENTRY_MAPPING_VALUE_STATE;
-    Exit(process_empty_scalar(mark));
+    Exit(ProcessEmptyScalar(mark));
   end;
 end;
 
-function TYamlParser.parse_flow_sequence_entry_mapping_value: TYamlEvent;
+function TYamlParser.ParseFlowSequenceEntryMappingValue: TYamlEvent;
 var
   token: TYamlToken;
 begin
@@ -833,14 +833,14 @@ begin
     if (not (token is TFlowEntryToken))
       and (not (token is TFlowSequenceEndToken)) then begin
       states.Push(YAML_PARSE_FLOW_SEQUENCE_ENTRY_MAPPING_END_STATE);
-      Exit(parse_node(False, False));
+      Exit(ParseNode(False, False));
     end;
   end;
   state := YAML_PARSE_FLOW_SEQUENCE_ENTRY_MAPPING_END_STATE;
-  Exit(process_empty_scalar(token.start_mark));
+  Exit(ProcessEmptyScalar(token.startMark));
 end;
 
-function TYamlParser.parse_flow_sequence_entry_mapping_end: TYamlEvent;
+function TYamlParser.ParseFlowSequenceEntryMappingEnd: TYamlEvent;
 var
   token: TYamlToken;
 begin
@@ -850,16 +850,16 @@ begin
 
   state := YAML_PARSE_FLOW_SEQUENCE_ENTRY_STATE;
 
-  Exit(TMappingEndEvent.Create(token.start_mark, token.start_mark));
+  Exit(TMappingEndEvent.Create(token.startMark, token.startMark));
 end;
 
-function TYamlParser.parse_flow_mapping_key(First: Boolean): TYamlEvent;
+function TYamlParser.ParseFlowMappingKey(AFirst: Boolean): TYamlEvent;
 var
   token: TYamlToken;
 begin
-  if (First) then begin
+  if (AFirst) then begin
     token := FScanner.Peek;
-    marks.Push(token.start_mark);
+    marks.Push(token.startMark);
     FScanner.SkipToken;
   end;
 
@@ -868,7 +868,7 @@ begin
     Exit(nil);
 
   if not (token is TFlowMappingEndToken) then begin
-    if (not First) then begin
+    if (not AFirst) then begin
       if (token is TFlowEntryToken) then begin
         FScanner.SkipToken;
         token := FScanner.Peek;
@@ -876,9 +876,9 @@ begin
           Exit(nil);
       end
       else begin
-        set_parser_error_context(
+        SetParserErrorContext(
           'while parsing a flow mapping', marks.Pop,
-          'did not find expected "," or "}"', token.start_mark);
+          'did not find expected "," or "}"', token.startMark);
       end;
     end;
 
@@ -891,27 +891,27 @@ begin
         and (not (token is TFlowEntryToken))
         and (not (token is TFlowMappingEndToken)) then begin
         states.Push(YAML_PARSE_FLOW_MAPPING_VALUE_STATE);
-        Exit(parse_node(False, False));
+        Exit(ParseNode(False, False));
       end
       else begin
         state := YAML_PARSE_FLOW_MAPPING_VALUE_STATE;
-        Exit(process_empty_scalar(token.start_mark));
+        Exit(ProcessEmptyScalar(token.startMark));
       end;
     end
     else
     if not (token is TFlowMappingEndToken) then begin
       states.Push(YAML_PARSE_FLOW_MAPPING_EMPTY_VALUE_STATE);
-      Exit(parse_node(False, False));
+      Exit(ParseNode(False, False));
     end;
   end;
 
   state := states.Pop;
   marks.Pop;
-  Result := TMappingEndEvent.Create(token.start_mark, token.end_mark);
+  Result := TMappingEndEvent.Create(token.startMark, token.endMark);
   FScanner.SkipToken;
 end;
 
-function TYamlParser.parse_flow_mapping_value(empty: Boolean): TYamlEvent;
+function TYamlParser.ParseFlowMappingValue(AEmpty: Boolean): TYamlEvent;
 var
   token: TYamlToken;
 begin
@@ -919,9 +919,9 @@ begin
   if not Assigned(token) then
     Exit(nil);
 
-  if (empty) then begin
+  if (AEmpty) then begin
     state := YAML_PARSE_FLOW_MAPPING_KEY_STATE;
-    Exit(process_empty_scalar(token.start_mark));
+    Exit(ProcessEmptyScalar(token.startMark));
   end;
 
   if (token is TValueToken) then begin
@@ -932,15 +932,15 @@ begin
     if (not (token is TFlowEntryToken))
       and (not (token is TFlowMappingEndToken)) then begin
       states.Push(YAML_PARSE_FLOW_MAPPING_KEY_STATE);
-      Exit(parse_node(False, False));
+      Exit(ParseNode(False, False));
     end;
   end;
 
   state := YAML_PARSE_FLOW_MAPPING_KEY_STATE;
-  Exit(process_empty_scalar(token.start_mark));
+  Exit(ProcessEmptyScalar(token.startMark));
 end;
 
-procedure TYamlParser.process_directives(var version_directive: TYamlVersionDirective);
+procedure TYamlParser.ProcessDirectives(var AVersionDirective: TYamlVersionDirective);
 var
   token: TYamlToken;
   defaultTagDirectives: TYamlTagDirectives;
@@ -958,9 +958,9 @@ begin
   while (token is TVersionDirectiveToken) or
     (token is TTagDirectiveToken) do begin
     if (token is TVersionDirectiveToken) then begin
-      if (version_directive.Major <> 0) then begin
-        set_parser_error(
-          'found duplicate %YAML directive', token.start_mark);
+      if (AVersionDirective.Major <> 0) then begin
+        SetParserError(
+          'found duplicate %YAML directive', token.startMark);
       end;
       versionToken := TVersionDirectiveToken(token);
       if (versionToken.major <> 1)
@@ -968,18 +968,18 @@ begin
         (versionToken.minor <> 1)
         and (versionToken.minor <> 2)
         ) then begin
-        set_parser_error(
-          'found incompatible YAML document', token.start_mark);
+        SetParserError(
+          'found incompatible YAML document', token.startMark);
       end;
-      version_directive.Major := versionToken.major;
-      version_directive.Minor := versionToken.minor;
+      AVersionDirective.Major := versionToken.major;
+      AVersionDirective.Minor := versionToken.minor;
     end
     else
     if (token is TTagDirectiveToken) then begin
       tagDirective.Handle := TTagDirectiveToken(token).handle;
       tagDirective.Prefix := TTagDirectiveToken(token).prefix;
 
-      append_tag_directive(tagDirective, False, token.start_mark);
+      AppendTagDirective(tagDirective, False, token.startMark);
     end;
 
     FScanner.SkipToken;
@@ -989,31 +989,31 @@ begin
   end;
 
   for tagDirective in defaultTagDirectives do begin
-    append_tag_directive(tagDirective, True, token.start_mark);
+    AppendTagDirective(tagDirective, True, token.startMark);
   end;
 end;
 
-function TYamlParser.process_empty_scalar(mark: TYamlMark): TYamlEvent;
+function TYamlParser.ProcessEmptyScalar(AMark: TYamlMark): TYamlEvent;
 begin
   Result := TScalarEvent.Create('', '', '',
-    True, False, yssPlainScalar, mark, mark);
+    True, False, yssPlainScalar, AMark, AMark);
 end;
 
-procedure TYamlParser.append_tag_directive(const Value: TYamlTagDirective;
-  allow_duplicates: Boolean; mark: TYamlMark);
+procedure TYamlParser.AppendTagDirective(const AValue: TYamlTagDirective;
+  AAllowDuplicates: Boolean; AMark: TYamlMark);
 var
   i: Integer;
 begin
   for i := 0 to High(tagDirectives) do begin
-    if Value.Handle = tagDirectives[i].Handle then begin
-      if allow_duplicates then
+    if AValue.Handle = tagDirectives[i].Handle then begin
+      if AAllowDuplicates then
         Exit;
-      set_parser_error('duplicate %TAG directive', mark);
+      SetParserError('duplicate %TAG directive', AMark);
     end;
   end;
 
   SetLength(tagDirectives, Length(tagDirectives) + 1);
-  tagDirectives[High(tagDirectives)] := Value;
+  tagDirectives[High(tagDirectives)] := AValue;
 end;
 
 
@@ -1044,19 +1044,19 @@ begin
   FScanner.SetInput(AStream);
 end;
 
-procedure TYamlParser.SetEncoding(encoding: TYamlEncoding);
+procedure TYamlParser.SetEncoding(AEncoding: TYamlEncoding);
 begin
-  FScanner.SetEncoding(encoding);
+  FScanner.SetEncoding(AEncoding);
 end;
 
-function TYamlParser.parse: TYamlEvent;
+function TYamlParser.Parse: TYamlEvent;
 begin
   if FScanner.streamEndProduced or (FError) or (state = YAML_PARSE_END_STATE) then begin
     Exit(nil);
   end;
 
   try
-    Exit(state_machine());
+    Exit(StateMachine());
   except
     on Exception do begin
       FError := True;

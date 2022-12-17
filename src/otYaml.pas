@@ -84,7 +84,8 @@ type
     (** The position column. *)
     Column: NativeInt;
 
-    procedure Initialize(const AIndex: Integer = 0; const ALine: Integer = 0; const AColumn: Integer = 0);
+    procedure Initialize(const AIndex: Integer = 0; const ALine: Integer = 0;
+      const AColumn: Integer = 0);
   end;
 
 (**
@@ -92,7 +93,7 @@ type
  * @{
  *)
 type
-   TYamlScalarFlag = (
+  TYamlScalarFlag = (
     { Is set if the node tag may be omitted whenever the scalar value is
       presented in the Plain style. }
     ysfPlainImplicit,
@@ -275,7 +276,7 @@ const
  *)
 type
   TYamlSimpleKey = class
-    public
+  public
     (** Is a simple key possible? *)
     FPossible: Boolean;
 
@@ -345,7 +346,6 @@ type
     YAML_PARSE_FLOW_MAPPING_EMPTY_VALUE_STATE,
     (** Expect nothing. *)
     YAML_PARSE_END_STATE);
-  Pyaml_parser_state_t = ^TYamlParserState;
 
 (**
  * @defgroup emitter Emitter Definitions
@@ -395,7 +395,8 @@ type
 
 implementation
 
-procedure TYamlMark.Initialize(const AIndex: Integer = 0; const ALine: Integer = 0; const AColumn: Integer = 0);
+procedure TYamlMark.Initialize(const AIndex: Integer = 0; const ALine: Integer = 0;
+  const AColumn: Integer = 0);
 begin
   Index := AIndex;
   Line := ALine;
@@ -423,10 +424,11 @@ end;
 
 constructor TYamlSimpleKey.Create;
 begin
-  FPossible := false;
-  FRequired := false;
+  FPossible := False;
+  FRequired := False;
   FTokenNumber := 0;
-  FMark.Index := 0;;
+  FMark.Index := 0;
+  ;
   FMark.Line := 0;
   FMark.Column := 0;
 end;

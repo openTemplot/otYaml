@@ -182,7 +182,7 @@ begin
     while True do begin
       try
         try
-          ev := parser.parse;
+          ev := parser.Parse;
         except
           on e: EYamlParserError do begin
             WriteLn('Parse error: ', e.Message);
