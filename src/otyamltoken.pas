@@ -70,7 +70,7 @@ type
     FPrefix: String;
 
   public
-    constructor Create(AHandle, APrefix: String; AStartMark, AEndMark: TYamlMark);
+    constructor Create(const AHandle, APrefix: String; AStartMark, AEndMark: TYamlMark);
     property handle: String Read FHandle;
     property prefix: String Read FPrefix;
 
@@ -81,7 +81,7 @@ type
     FValue: String;
 
   public
-    constructor Create(AValue: String; AStartMark, AEndMark: TYamlMark);
+    constructor Create(const AValue: String; AStartMark, AEndMark: TYamlMark);
     property Value: String Read FValue;
   end;
 
@@ -90,7 +90,7 @@ type
     FValue: String;
 
   public
-    constructor Create(AValue: String; AStartMark, AEndMark: TYamlMark);
+    constructor Create(const AValue: String; AStartMark, AEndMark: TYamlMark);
     property Value: String Read FValue;
   end;
 
@@ -100,7 +100,8 @@ type
     FSuffix: String;
 
   public
-    constructor Create(AHandle: String; ASuffix: String; AStartMark, AEndMark: TYamlMark);
+    constructor Create(const AHandle: String; const ASuffix: String;
+      AStartMark, AEndMark: TYamlMark);
     property handle: String Read FHandle;
     property suffix: String Read FSuffix;
   end;
@@ -123,7 +124,8 @@ type
     FScalarStyle: TYamlScalarStyle;
 
   public
-    constructor Create(AValue: String; AStyle: TYamlScalarStyle; AStartMark, AEndMark: TYamlMark);
+    constructor Create(const AValue: String; AStyle: TYamlScalarStyle;
+      AStartMark, AEndMark: TYamlMark);
     property Value: String Read FValue;
     property scalar_style: TYamlScalarStyle Read FScalarStyle;
   end;
@@ -306,7 +308,8 @@ begin
   FMinor := AMinor;
 end;
 
-constructor TTagDirectiveToken.Create(AHandle, APrefix: String; AStartMark, AEndMark: TYamlMark);
+constructor TTagDirectiveToken.Create(const AHandle, APrefix: String;
+  AStartMark, AEndMark: TYamlMark);
 begin
   inherited Create(AStartMark, AEndMark);
   FHandle := AHandle;
@@ -318,26 +321,27 @@ begin
   inherited Create(AStartMark, AEndMark);
 end;
 
-constructor TAnchorToken.Create(AValue: String; AStartMark, AEndMark: TYamlMark);
+constructor TAnchorToken.Create(const AValue: String; AStartMark, AEndMark: TYamlMark);
 begin
   inherited Create(AStartMark, AEndMark);
   FValue := AValue;
 end;
 
-constructor TAliasToken.Create(AValue: String; AStartMark, AEndMark: TYamlMark);
+constructor TAliasToken.Create(const AValue: String; AStartMark, AEndMark: TYamlMark);
 begin
   inherited Create(AStartMark, AEndMark);
   FValue := AValue;
 end;
 
-constructor TTagToken.Create(AHandle: String; ASuffix: String; AStartMark, AEndMark: TYamlMark);
+constructor TTagToken.Create(const AHandle: String; const ASuffix: String;
+  AStartMark, AEndMark: TYamlMark);
 begin
   inherited Create(AStartMark, AEndMark);
   FHandle := AHandle;
   FSuffix := ASuffix;
 end;
 
-constructor TScalarToken.Create(AValue: String; AStyle: TYamlScalarStyle;
+constructor TScalarToken.Create(const AValue: String; AStyle: TYamlScalarStyle;
   AStartMark, AEndMark: TYamlMark);
 begin
   inherited Create(AStartMark, AEndMark);

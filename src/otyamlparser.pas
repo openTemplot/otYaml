@@ -24,7 +24,7 @@ type
     FMark: TYamlMark;
 
   public
-    constructor Create(AProblem: String; AMark: TYamlMark);
+    constructor Create(const AProblem: String; AMark: TYamlMark);
   end;
 
   EYamlParserErrorContext = class(Exception)
@@ -34,8 +34,8 @@ type
     FProblemMark: TYamlMark;
 
   public
-    constructor Create(AContext: String; AContextMark: TYamlMark;
-      AProblem: String; AProblemMark: TYamlMark);
+    constructor Create(const AContext: String; AContextMark: TYamlMark;
+      const AProblem: String; AProblemMark: TYamlMark);
 
     property problemMark: TYamlMark Read FProblemMark;
   end;
@@ -71,9 +71,9 @@ type
     (** The list of TAG directives. *)
     tagDirectives: TYamlTagDirectives;
 
-    procedure set_parser_error(AProblem: String; AMark: TYamlMark);
-    procedure set_parser_error_context(AContext: String; AContextMark: TYamlMark;
-      AProblem: String; AProblemMark: TYamlMark);
+    procedure set_parser_error(const AProblem: String; AMark: TYamlMark);
+    procedure set_parser_error_context(const AContext: String; AContextMark: TYamlMark;
+      const AProblem: String; AProblemMark: TYamlMark);
 
     function state_machine: TYamlEvent;
     function parse_stream_start: TYamlEvent;
@@ -113,14 +113,14 @@ implementation
 
 { EYamlParserError }
 
-constructor EYamlParserError.Create(AProblem: String; AMark: TYamlMark);
+constructor EYamlParserError.Create(const AProblem: String; AMark: TYamlMark);
 begin
   inherited Create(AProblem);
   FMark := AMark;
 end;
 
-constructor EYamlParserErrorContext.Create(AContext: String; AContextMark: TYamlMark;
-  AProblem: String; AProblemMark: TYamlMark);
+constructor EYamlParserErrorContext.Create(const AContext: String; AContextMark: TYamlMark;
+  const AProblem: String; AProblemMark: TYamlMark);
 begin
   inherited Create(AProblem);
   FContext := AContext;
@@ -171,13 +171,13 @@ end;
 
 { TYamlParser }
 
-procedure TYamlParser.set_parser_error(AProblem: String; AMark: TYamlMark);
+procedure TYamlParser.set_parser_error(const AProblem: String; AMark: TYamlMark);
 begin
   raise EYamlParserError.Create(AProblem, AMark);
 end;
 
-procedure TYamlParser.set_parser_error_context(AContext: String; AContextMark: TYamlMark;
-  AProblem: String; AProblemMark: TYamlMark);
+procedure TYamlParser.set_parser_error_context(const AContext: String; AContextMark: TYamlMark;
+  const AProblem: String; AProblemMark: TYamlMark);
 begin
   raise EYamlParserErrorContext.Create(AContext, AContextMark, AProblem, AProblemMark);
 end;

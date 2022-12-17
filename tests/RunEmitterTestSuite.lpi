@@ -46,6 +46,7 @@
       <Unit>
         <Filename Value="..\src\otyamlwriter.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="otYamlWriter"/>
       </Unit>
     </Units>
   </ProjectOptions>

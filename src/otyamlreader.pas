@@ -16,7 +16,7 @@ type
     FOffset: Int64;
 
   public
-    constructor Create(AProblem: String; AOffset: Int64);
+    constructor Create(const AProblem: String; AOffset: Int64);
   end;
 
   { TYamlReader }
@@ -30,7 +30,7 @@ type
     FEncoding: TYamlEncoding;
     FMark: TYamlMark;
 
-    procedure SetReaderError(AProblem: String; AOffset: Int64);
+    procedure SetReaderError(const AProblem: String; AOffset: Int64);
 
     procedure UpdateBuffer(ALength: Integer);
     procedure DetermineEncoding;
@@ -62,7 +62,7 @@ implementation
 uses
   otYamlChars;
 
-constructor EYamlReaderError.Create(AProblem: String; AOffset: Int64);
+constructor EYamlReaderError.Create(const AProblem: String; AOffset: Int64);
 begin
   inherited Create(AProblem);
   FOffset := AOffset;
@@ -81,7 +81,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TYamlReader.SetReaderError(AProblem: String; AOffset: Int64);
+procedure TYamlReader.SetReaderError(const AProblem: String; AOffset: Int64);
 begin
   raise EYamlReaderError.Create(AProblem, AOffset);
 end;

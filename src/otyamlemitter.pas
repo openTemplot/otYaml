@@ -28,7 +28,7 @@ type
     FMark: TYamlMark;
 
   public
-    constructor Create(AProblem: String);
+    constructor Create(const AProblem: String);
   end;
 
 
@@ -136,7 +136,7 @@ type
       FStyle: TYamlScalarStyle;
       end;
 
-    procedure SetEmitterError(AProblem: String);
+    procedure SetEmitterError(const AProblem: String);
     procedure AppendTagDirective(const AValue: TYamlTagDirective;
       AAllowDuplicates: Boolean);
     function NeedMoreEvents: Boolean;
@@ -150,9 +150,9 @@ type
     procedure ProcessScalar;
 
     procedure AnalyzeEvent(AEvent: TYamlEvent);
-    procedure AnalyzeAnchor(AAnchor: String; AIsAlias: Boolean);
-    procedure AnalyzeTag(ATag: String);
-    procedure AnalyzeScalar(AValue: String);
+    procedure AnalyzeAnchor(const AAnchor: String; AIsAlias: Boolean);
+    procedure AnalyzeTag(const ATag: String);
+    procedure AnalyzeScalar(const AValue: String);
     procedure AnalyzeVersionDirective(const AVersionDirective: TYamlVersionDirective);
     procedure AnalyzeTagDirective(const AValue: TYamlTagDirective);
 
@@ -177,17 +177,17 @@ type
 
     procedure WriteBOM;
     procedure WriteIndent;
-    procedure WriteIndicator(AIndicator: string; ANeedWhitespace: boolean;
+    procedure WriteIndicator(const AIndicator: string; ANeedWhitespace: boolean;
       AIsWhitespace: boolean; AIsIndentation: boolean);
-    procedure WriteAnchor(AValue: string);
-    procedure WriteTagHandle(AValue: string);
-    procedure WriteTagContent(AValue: string; ANeedWhitespace: Boolean);
-    procedure WritePlainScalar(AValue: string; AAllowBreaks: Boolean);
-    procedure WriteSingleQuotedScalar(AValue: string; AAllowBreaks: Boolean);
-    procedure WriteDoubleQuotedScalar(AValue: string; AAllowBreaks: Boolean);
-    procedure WriteBlockScalarHints(AValue: string);
-    procedure WriteLiteralScalar(AValue: string);
-    procedure WriteFoldedScalar(AValue: string);
+    procedure WriteAnchor(const AValue: string);
+    procedure WriteTagHandle(const AValue: string);
+    procedure WriteTagContent(const AValue: string; ANeedWhitespace: Boolean);
+    procedure WritePlainScalar(const AValue: string; AAllowBreaks: Boolean);
+    procedure WriteSingleQuotedScalar(const AValue: string; AAllowBreaks: Boolean);
+    procedure WriteDoubleQuotedScalar(const AValue: string; AAllowBreaks: Boolean);
+    procedure WriteBlockScalarHints(const AValue: string);
+    procedure WriteLiteralScalar(const AValue: string);
+    procedure WriteFoldedScalar(const AValue: string);
 
     function CheckEmptyDocument: Boolean;
     function CheckEmptySequence: Boolean;
@@ -212,17 +212,18 @@ type
     procedure DocumentStartEvent(AVersionDirective: TYamlVersionDirective;
       ATagDirectives: TYamlTagDirectives; AImplicit: boolean);
     procedure DocumentEndEvent(AImplicit: Boolean);
-    procedure SequenceStartEvent(AAnchor, ATag: String; AImplicit: Boolean;
+    procedure SequenceStartEvent(const AAnchor, ATag: String; AImplicit: Boolean;
       AStyle: TYamlSequenceStyle);
     procedure SequenceEndEvent;
-    procedure MappingStartEvent(AAnchor, ATag: String; AImplicit: Boolean;
+    procedure MappingStartEvent(const AAnchor, ATag: String; AImplicit: Boolean;
       AStyle: TYamlMappingStyle);
     procedure MappingEndEvent;
-    procedure ScalarEvent(AAnchor, ATag, AValue: String; APlainImplicit, AQuotedImplicit: Boolean;
+    procedure ScalarEvent(const AAnchor, ATag, AValue: String;
+      APlainImplicit, AQuotedImplicit: Boolean;
       AStyle: TYamlScalarStyle);
-    procedure AliasEvent(AAnchor: String);
+    procedure AliasEvent(const AAnchor: String);
 
-    function HasAnchor(AAnchor: String): Boolean;
+    function HasAnchor(const AAnchor: String): Boolean;
   end;
 
 
@@ -233,14 +234,14 @@ uses
 
 { EYamlEmitterError }
 
-constructor EYamlEmitterError.Create(AProblem: String);
+constructor EYamlEmitterError.Create(const AProblem: String);
 begin
   inherited Create(AProblem);
 end;
 
 { TYamlEmitter }
 
-procedure TYamlEmitter.SetEmitterError(AProblem: String);
+procedure TYamlEmitter.SetEmitterError(const AProblem: String);
 begin
   raise EYamlEmitterError(AProblem);
 end;
@@ -427,7 +428,7 @@ begin
         and not scalarEvent.quotedImplicit)) then begin
         AnalyzeTag(scalarEvent.tag);
       end;
-      AnalyzeScalar(scalarEvent.value);
+      AnalyzeScalar(scalarEvent.Value);
       Exit;
     end;
 
@@ -460,7 +461,7 @@ begin
   end;
 end;
 
-procedure TYamlEmitter.AnalyzeAnchor(AAnchor: String; AIsAlias: Boolean);
+procedure TYamlEmitter.AnalyzeAnchor(const AAnchor: String; AIsAlias: Boolean);
 var
   i: Integer;
 begin
@@ -486,7 +487,7 @@ begin
   FAnchors.Add(AAnchor);
 end;
 
-procedure TYamlEmitter.AnalyzeTag(ATag: String);
+procedure TYamlEmitter.AnalyzeTag(const ATag: String);
 var
   tag_directive: TYamlTagDirective;
   prefix_length: Integer;
@@ -507,7 +508,7 @@ begin
   FTagData.FSuffix := ATag;
 end;
 
-procedure TYamlEmitter.AnalyzeScalar(AValue: String);
+procedure TYamlEmitter.AnalyzeScalar(const AValue: String);
 var
   block_indicators: Boolean;
   flow_indicators: Boolean;
@@ -864,70 +865,70 @@ begin
     defaultTagDirectives[1] := TYamlTagDirective.Build('!!', 'tag:yaml.org,2002:');
 
 
-      if (docStartEvent.versionDirective.Major > 0) then begin
-        AnalyzeVersionDirective(docStartEvent.versionDirective);
-      end;
+    if (docStartEvent.versionDirective.Major > 0) then begin
+      AnalyzeVersionDirective(docStartEvent.versionDirective);
+    end;
 
+    for td in docStartEvent.tagDirectives do begin
+      AnalyzeTagDirective(td);
+      AppendTagDirective(td, False);
+    end;
+
+    for td in defaultTagDirectives do begin
+      AppendTagDirective(td, True);
+    end;
+
+    implicit := docStartEvent.implicit;
+    if (not AFirst) or FCanonical then begin
+      implicit := False;
+    end;
+
+    if ((docStartEvent.versionDirective.Major > 0) or
+      (Length(docStartEvent.tagDirectives) > 0)) and
+      (FExplicitDocEndRequired > 0) then begin
+      WriteIndicator('...', True, False, False);
+      WriteIndent;
+    end;
+    FExplicitDocEndRequired := 0;
+
+    if (docStartEvent.versionDirective.Major > 0) then begin
+      implicit := False;
+      WriteIndicator('%YAML', True, False, False);
+      if (docStartEvent.versionDirective.Minor = 1) then begin
+        WriteIndicator('1.1', True, False, False);
+      end
+      else begin
+        WriteIndicator('1.2', True, False, False);
+      end;
+      WriteIndent;
+    end;
+
+    if Length(docStartEvent.tagDirectives) > 0 then begin
+      implicit := False;
       for td in docStartEvent.tagDirectives do begin
-        AnalyzeTagDirective(td);
-        AppendTagDirective(td, False);
-      end;
-
-      for td in defaultTagDirectives do begin
-        AppendTagDirective(td, True);
-      end;
-
-      implicit := docStartEvent.implicit;
-      if (not AFirst) or FCanonical then begin
-        implicit := False;
-      end;
-
-      if ((docStartEvent.versionDirective.Major > 0) or
-        (Length(docStartEvent.tagDirectives) > 0)) and
-        (FExplicitDocEndRequired > 0) then begin
-        WriteIndicator('...', True, False, False);
+        WriteIndicator('%TAG', True, False, False);
+        WriteTagHandle(td.Handle);
+        WriteTagContent(td.Prefix, True);
         WriteIndent;
       end;
-      FExplicitDocEndRequired := 0;
+    end;
 
-      if (docStartEvent.versionDirective.Major > 0) then begin
-        implicit := False;
-        WriteIndicator('%YAML', True, False, False);
-        if (docStartEvent.versionDirective.Minor = 1) then begin
-          WriteIndicator('1.1', True, False, False);
-        end
-        else begin
-          WriteIndicator('1.2', True, False, False);
-        end;
+    if (CheckEmptyDocument()) then begin
+      implicit := False;
+    end;
+
+    if (not implicit) then begin
+      WriteIndent;
+      WriteIndicator('---', True, False, False);
+      if FCanonical then begin
         WriteIndent;
       end;
+    end;
 
-      if Length(docStartEvent.tagDirectives) > 0 then begin
-        implicit := False;
-        for td in docStartEvent.tagDirectives do begin
-          WriteIndicator('%TAG', True, False, False);
-          WriteTagHandle(td.Handle);
-          WriteTagContent(td.Prefix, True);
-          WriteIndent;
-        end;
-      end;
+    FState := YAML_EMIT_DOCUMENT_CONTENT_STATE;
 
-      if (CheckEmptyDocument()) then begin
-        implicit := False;
-      end;
-
-      if (not implicit) then begin
-        WriteIndent;
-        WriteIndicator('---', True, False, False);
-        if FCanonical then begin
-          WriteIndent;
-        end;
-      end;
-
-      FState := YAML_EMIT_DOCUMENT_CONTENT_STATE;
-
-      FExplicitDocEndRequired := 0;
-      Exit(True);
+    FExplicitDocEndRequired := 0;
+    Exit(True);
   end
 
   else
@@ -1247,7 +1248,7 @@ begin
   FPrevWasIndentation := True;
 end;
 
-procedure TYamlEmitter.WriteIndicator(AIndicator: string; ANeedWhitespace: boolean;
+procedure TYamlEmitter.WriteIndicator(const AIndicator: string; ANeedWhitespace: boolean;
   AIsWhitespace: boolean; AIsIndentation: boolean);
 var
   i: Integer;
@@ -1266,7 +1267,7 @@ begin
   FPrevWasIndentation := (FPrevWasIndentation and AIsIndentation);
 end;
 
-procedure TYamlEmitter.WriteAnchor(AValue: string);
+procedure TYamlEmitter.WriteAnchor(const AValue: string);
 var
   i: Integer;
 begin
@@ -1280,7 +1281,7 @@ begin
   FPrevWasIndentation := False;
 end;
 
-procedure TYamlEmitter.WriteTagHandle(AValue: string);
+procedure TYamlEmitter.WriteTagHandle(const AValue: string);
 var
   i: Integer;
 begin
@@ -1298,7 +1299,7 @@ begin
   FPrevWasIndentation := False;
 end;
 
-procedure TYamlEmitter.WriteTagContent(AValue: string; ANeedWhitespace: Boolean);
+procedure TYamlEmitter.WriteTagContent(const AValue: string; ANeedWhitespace: Boolean);
 const
   hex_digits: string = '0123456789ABCDEF';
 var
@@ -1335,7 +1336,7 @@ begin
   FPrevWasIndentation := False;
 end;
 
-procedure TYamlEmitter.WritePlainScalar(AValue: string; AAllowBreaks: Boolean);
+procedure TYamlEmitter.WritePlainScalar(const AValue: string; AAllowBreaks: Boolean);
 var
   i: Integer;
   spaces: Boolean;
@@ -1399,7 +1400,7 @@ begin
   FPrevWasIndentation := False;
 end;
 
-procedure TYamlEmitter.WriteSingleQuotedScalar(AValue: string; AAllowBreaks: Boolean);
+procedure TYamlEmitter.WriteSingleQuotedScalar(const AValue: string; AAllowBreaks: Boolean);
 var
   i: Integer;
   spaces: boolean;
@@ -1461,7 +1462,7 @@ begin
   FPrevWasIndentation := False;
 end;
 
-procedure TYamlEmitter.WriteDoubleQuotedScalar(AValue: string; AAllowBreaks: Boolean);
+procedure TYamlEmitter.WriteDoubleQuotedScalar(const AValue: string; AAllowBreaks: Boolean);
 const
   hex_digits: string = '0123456789ABCDEF';
 var
@@ -1585,7 +1586,7 @@ begin
   FPrevWasIndentation := False;
 end;
 
-procedure TYamlEmitter.WriteBlockScalarHints(AValue: string);
+procedure TYamlEmitter.WriteBlockScalarHints(const AValue: string);
 var
   indent_hint: string;
   chomp_hint: string;
@@ -1630,7 +1631,7 @@ begin
   end;
 end;
 
-procedure TYamlEmitter.WriteLiteralScalar(AValue: string);
+procedure TYamlEmitter.WriteLiteralScalar(const AValue: string);
 var
   breaks: boolean;
   i: Integer;
@@ -1662,7 +1663,7 @@ begin
   end;
 end;
 
-procedure TYamlEmitter.WriteFoldedScalar(AValue: string);
+procedure TYamlEmitter.WriteFoldedScalar(const AValue: string);
 var
   breaks: boolean;
   leading_spaces: boolean;
@@ -1945,7 +1946,7 @@ begin
   emit(event);
 end;
 
-procedure TYamlEmitter.SequenceStartEvent(AAnchor, ATag: String; AImplicit: Boolean;
+procedure TYamlEmitter.SequenceStartEvent(const AAnchor, ATag: String; AImplicit: Boolean;
   AStyle: TYamlSequenceStyle);
 var
   mark: TYamlMark;
@@ -1970,7 +1971,7 @@ begin
   emit(event);
 end;
 
-procedure TYamlEmitter.MappingStartEvent(AAnchor, ATag: String; AImplicit: Boolean;
+procedure TYamlEmitter.MappingStartEvent(const AAnchor, ATag: String; AImplicit: Boolean;
   AStyle: TYamlMappingStyle);
 var
   mark: TYamlMark;
@@ -1995,7 +1996,7 @@ begin
   emit(event);
 end;
 
-procedure TYamlEmitter.ScalarEvent(AAnchor, ATag, AValue: String; APlainImplicit,
+procedure TYamlEmitter.ScalarEvent(const AAnchor, ATag, AValue: String; APlainImplicit,
   AQuotedImplicit: Boolean; AStyle: TYamlScalarStyle);
 var
   mark: TYamlMark;
@@ -2009,7 +2010,7 @@ begin
   emit(event);
 end;
 
-procedure TYamlEmitter.AliasEvent(AAnchor: String);
+procedure TYamlEmitter.AliasEvent(const AAnchor: String);
 var
   mark: TYamlMark;
   event: TYamlEvent;
@@ -2021,7 +2022,7 @@ begin
   emit(event);
 end;
 
-function TYamlEmitter.HasAnchor(AAnchor: String): Boolean;
+function TYamlEmitter.HasAnchor(const AAnchor: String): Boolean;
 begin
   Result := FAnchors.Contains(AAnchor);
 end;

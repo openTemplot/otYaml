@@ -80,7 +80,7 @@ type
   private
     FAnchor: String;
   public
-    constructor Create(AAnchor: String; AStartMark: TYamlMark; AEndMark: TYamlMark);
+    constructor Create(const AAnchor: String; AStartMark: TYamlMark; AEndMark: TYamlMark);
 
     property anchor: String Read FAnchor;
   end;
@@ -96,11 +96,12 @@ type
     FQuotedImplicit: Boolean;
     FScalarStyle: TYamlScalarStyle;
   public
-    constructor Create(AAnchor, ATag, AValue: String; APlainImplicit, AQuotedImplicit: Boolean;
+    constructor Create(const AAnchor, ATag, AValue: String;
+      APlainImplicit, AQuotedImplicit: Boolean;
       AStyle: TYamlScalarStyle; AStartMark, AEndMark: TYamlMark);
     property anchor: String Read FAnchor;
     property tag: String Read FTag;
-    property value: String Read FValue;
+    property Value: String Read FValue;
     property plainImplicit: Boolean Read FPlainImplicit;
     property quotedImplicit: Boolean Read FQuotedImplicit;
     property scalarStyle: TYamlScalarStyle Read FScalarStyle;
@@ -115,7 +116,7 @@ type
     FImplicit: Boolean;
     FSequenceStyle: TYamlSequenceStyle;
   public
-    constructor Create(AAnchor, ATag: String; AImplicit: Boolean;
+    constructor Create(const AAnchor, ATag: String; AImplicit: Boolean;
       AStyle: TYamlSequenceStyle; AStartMark, AEndMark: TYamlMark);
 
     property anchor: String Read FAnchor;
@@ -140,7 +141,7 @@ type
     FImplicit: Boolean;
     FMappingStyle: TYamlMappingStyle;
   public
-    constructor Create(AAnchor, ATag: String; AImplicit: Boolean; AStyle: TYamlMappingStyle;
+    constructor Create(const AAnchor, ATag: String; AImplicit: Boolean; AStyle: TYamlMappingStyle;
       AStartMark, AEndMark: TYamlMark);
     property anchor: String Read FAnchor;
     property tag: String Read FTag;
@@ -222,7 +223,7 @@ end;
 
 { TMappingStartEvent }
 
-constructor TMappingStartEvent.Create(AAnchor, ATag: String; AImplicit: Boolean;
+constructor TMappingStartEvent.Create(const AAnchor, ATag: String; AImplicit: Boolean;
   AStyle: TYamlMappingStyle; AStartMark, AEndMark: TYamlMark);
 begin
   inherited Create(TYamlEventType.YAML_MAPPING_START_EVENT, AStartMark, AEndMark);
@@ -242,7 +243,7 @@ end;
 
 { TScalarEvent }
 
-constructor TScalarEvent.Create(AAnchor, ATag, AValue: String; APlainImplicit,
+constructor TScalarEvent.Create(const AAnchor, ATag, AValue: String; APlainImplicit,
   AQuotedImplicit: Boolean; AStyle: TYamlScalarStyle; AStartMark, AEndMark: TYamlMark);
 begin
   inherited Create(TYamlEventType.YAML_SCALAR_EVENT, AStartMark, AEndMark);
@@ -257,7 +258,7 @@ end;
 
 { TSequenceStartEvent }
 
-constructor TSequenceStartEvent.Create(AAnchor, ATag: String;
+constructor TSequenceStartEvent.Create(const AAnchor, ATag: String;
   AImplicit: Boolean; AStyle: TYamlSequenceStyle; AStartMark,
   AEndMark: TYamlMark);
 begin
@@ -278,7 +279,7 @@ end;
 
 { TAliasEvent }
 
-constructor TAliasEvent.Create(AAnchor: String; AStartMark: TYamlMark;
+constructor TAliasEvent.Create(const AAnchor: String; AStartMark: TYamlMark;
   AEndMark: TYamlMark);
 begin
   inherited Create(TYamlEventType.YAML_ALIAS_EVENT, AStartMark, AEndMark);
