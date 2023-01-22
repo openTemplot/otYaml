@@ -684,8 +684,7 @@ var
 begin
   if (FFlowLevel > 0) then begin
     Dec(FFlowLevel);
-    sk := FSimpleKeys.Pop;
-    sk.Free;
+    FSimpleKeys.Pop;
   end;
 end;
 

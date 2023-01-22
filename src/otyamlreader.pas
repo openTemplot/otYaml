@@ -78,6 +78,8 @@ end;
 
 destructor TYamlReader.Destroy;
 begin
+  FInput.Free;
+
   inherited Destroy;
 end;
 
