@@ -699,7 +699,6 @@ begin
     Result := TMappingEndEvent.Create(token.startMark, token.endMark);
     FScanner.SkipToken;
     Exit;
-    ;
   end
 
   else begin
