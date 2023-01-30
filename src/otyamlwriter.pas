@@ -69,6 +69,7 @@ end;
 
 destructor TYamlWriter.Destroy;
 begin
+  FStream.Free;
   inherited;
 end;
 
