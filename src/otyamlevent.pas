@@ -23,6 +23,7 @@ type
       AEndMark: TYamlMark);
 
     property eventType: TYamlEventType Read FEventType;
+    property startMark: TYamlMark read FStartMark;
   end;
 
   { TStreamStartEvent }
